@@ -19,6 +19,7 @@ using namespace std;
 #define WIDTH 1300
 #define HEIGHT 700
 #define lookSize 600
+#define N_TARGET 6
 
 typedef struct{
     int x;
@@ -68,6 +69,11 @@ int posX;
 int posY;
 int lastCorrectState = 's';
 bool exploded = false;
+
+int mode = 0;
+//Array
+rgb targetColor[6];
+bool isTargetShot[6];
 
 rgb clipperMatrix[lookSize-250][lookSize-250];
 
@@ -358,6 +364,14 @@ void drawFrame() {
     drawLine(rgb::WHITE, 0, 600, 0, 0);
 }
 
+void fire() {
+    for (int i = 0; i < N_TARGET; i++) {
+        if (targetColor[i] == clipperMatrix[lookSize/2][lookSize/2]) {
+            isTargetShot[i] = true;
+        }
+    }
+}
+
 void drawKeyClip(){
 
     while (!detectKeyStroke()) {
@@ -380,11 +394,34 @@ void drawKeyClip(){
             jalan = !jalan;
         } else if ((KeyPressed=='B') ||(KeyPressed=='b')) {
             bangunan = !bangunan;
+        } else if ((KeyPressed=='M') ||(KeyPressed=='m')) {
+            mode = !mode;
+        } else if ((KeyPressed==' ')) {
+            fire();
         }
     }
 }
 
-
+void drawClipPointer() {
+    int center = (lookSize-250)/2;
+    if (mode == 0) {
+        for(int i = 0; i < 10; i++) {
+            clipperMatrix[center + i][center] = rgb::WHITE;
+            clipperMatrix[center - i][center] = rgb::WHITE;
+            clipperMatrix[center][center + i] = rgb::WHITE;
+            clipperMatrix[center][center - i] = rgb::WHITE;
+        }
+    } else {
+        for(int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3-i; j++) {
+                clipperMatrix[center + i][center+j] = rgb::WHITE;
+                clipperMatrix[center + i][center-j] = rgb::WHITE;
+                clipperMatrix[center - i][center+j] = rgb::WHITE;
+                clipperMatrix[center - i][center-j] = rgb::WHITE;
+            }
+        }
+    }
+}
 
 void clipper(int y, int x, int size) {
     int i, j;
@@ -401,13 +438,15 @@ void clipper(int y, int x, int size) {
             clipperMatrix[i][j] = pixelMatrix[x+(i*size/(lookSize-250))][y+(j*size/(lookSize-250))];
         }
     }
+
+    drawClipPointer();
 }
 
 
 void drawClips(int y, int x, int size) {
     int i,j;
     /*ofstream peta("peta.txt");
-    
+
     peta << "ngewe";*/
     drawLine(rgb::YELLOW, x-1,y-1,x+size,y-1);
     drawLine(rgb::YELLOW, x+size,y-1,x+size,y+size);
@@ -593,7 +632,7 @@ rgb hsv2rgb(hsv in)
     out.r *= 255;
     out.g *= 255;
     out.b *= 255;
-    return out;     
+    return out;
 }
 
 void colorBangunan() {
@@ -707,7 +746,7 @@ int main(int argc, char const *argv[]) {
     int xawal = 100, yawal = 150;
     bool left = true;
     inputPeta();
-    
+
     do {
         clearMatrix();
         drawFrame();
