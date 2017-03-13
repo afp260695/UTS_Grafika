@@ -12,6 +12,7 @@
 #include <termios.h>
 #include <math.h>
 #include <thread>
+#include <pthread.h>
 #include <vector>
 
 using namespace std;
@@ -19,6 +20,7 @@ using namespace std;
 #define WIDTH 1300
 #define HEIGHT 700
 #define lookSize 600
+pthread_t d_Drone;
 
 typedef struct{
     int x;
@@ -35,6 +37,8 @@ typedef struct rgb {
     static const rgb BLACK;
     static const rgb GREEN;
     static const rgb RED;
+    static const rgb MAGENTA;
+    static const rgb DARKGRAY;
     bool operator== (const rgb &c) {
         return (r == c.r && g == c.g && b == c.b);
     }
@@ -46,6 +50,9 @@ const rgb rgb::YELLOW = {255, 255, 0};
 const rgb rgb::BLACK = {0, 0, 0};
 const rgb rgb::GREEN = {0, 255, 0};
 const rgb rgb::RED = {255, 0, 0};
+const rgb rgb::MAGENTA = {255, 0, 255};
+const rgb rgb::DARKGRAY = {112, 128, 144};
+
 
 typedef struct {
     double h;       // angle in degrees
@@ -490,6 +497,49 @@ void drawAllPohon() {
     drawPohon(276,87,12);
 }
 
+// x and y are center point
+void drawDrone (int x, int y, int width, int length, rgb dcolor) {
+	int wbawah = width/4;
+	//badannya
+	drawLine(dcolor, x-width, y, x+width, y);
+	drawLine(dcolor, x+width, y, x+width, y+(wbawah/2));
+	drawLine(dcolor, x+width, y+(wbawah/2), x+(width-10), y+(wbawah/2));
+	drawLine(dcolor, x+(width-10), y+(wbawah/2), x+wbawah, y+length);
+	drawLine(dcolor, x+wbawah, y+length, x-wbawah, y+length);
+	drawLine(dcolor, x-wbawah, y+length, x-(width-10), y+(wbawah/2));
+	drawLine(dcolor, x-(width-10), y+(wbawah/2), x-width, y+(wbawah/2));
+	drawLine(dcolor, x-width, y+(wbawah/2), x-width, y);
+	//tangan
+	drawLine(dcolor, x+width-5, y, x+width-5, y-10);
+	drawLine(dcolor, x-width, y-10, x-width+10, y-10);
+	drawLine(dcolor, x-width+5, y, x-width+5, y-10);
+	drawLine(dcolor, x+width, y-10, x+width-10, y-10);
+}
+
+int rotateX (int x, int y, int degree) {
+	float t = 3.14*degree/180;
+	float c = cos(t);
+	float s = sin(t);
+	int xt = 200;
+	int yt = 100;
+	x -= xt;
+	y -= yt;
+	float xtemp = x * c - y * s; 
+	return (xtemp + xt);
+}
+
+int rotateY (int x, int y, int degree) {
+	float t = 3.14*degree/180;
+	float c = cos(t);
+	float s = sin(t);
+	int xt = 200;
+	int yt = 100;
+	x -= xt;
+	y -= yt;
+	float ytemp = x * s + y * c; 
+	return (ytemp + yt);
+}
+
 void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
     myfile.open ("bangunan.txt");
 
@@ -658,11 +708,28 @@ void drawTarget(int x, int y, int scaling, rgb warna){
     floodFill(x+1*scaling, y+3*scaling, rgb::WHITE, warna);
 }
 
-
+void *drawDroneThread(void *args){
+		//draw drone
+        int length = 50;
+		int width = 20;
+		int x = 200;
+		int y = 200;
+		while (1) {
+			int x_ = rotateX (x, y, 36);
+			int y_ = rotateY (x, y, 36);
+			drawDrone (x_, y_, length, width, rgb::WHITE);
+			floodFill(x_, y_+10, rgb::WHITE, rgb::GRAY);
+			sleep(1);
+			floodFill(x_, y_+10, rgb::WHITE, rgb::BLACK);
+			drawDrone (x_, y_, length, width, rgb::BLACK);
+			x = x_; y = y_;
+			//cout << "hai" << endl;
+		}
+}
 
 int main(int argc, char const *argv[]) {
     clearMatrix();
-
+	
     int fbfd = 0;
     long int screensize = 0;
     bool exploded = false;
@@ -707,7 +774,11 @@ int main(int argc, char const *argv[]) {
     int xawal = 100, yawal = 150;
     bool left = true;
     inputPeta();
-    
+    //pthread_create(&d_Drone, NULL, drawDroneThread, NULL);
+	int length = 50;
+	int width = 20;
+	int x = 200;
+	int y = 200;
     do {
         clearMatrix();
         drawFrame();
@@ -715,13 +786,6 @@ int main(int argc, char const *argv[]) {
         drawLine(rgb::WHITE, 0, 0, 0, 419);
         drawLine(rgb::WHITE, 0, 419, 363, 419);
         drawLine(rgb::WHITE, 363, 0, 363, 419);
-
-/*
-        drawShooter(xp,yp,lastCorrectState);
-        drawShooter(xp,yp-150,lastCorrectState);
-        drawShooter(xp-200,yp,lastCorrectState);
-        drawShooter(xp-200,yp-150,lastCorrectState);
-*/
         ifstream myfile;
         vector<Building> B;
 
@@ -742,7 +806,7 @@ int main(int argc, char const *argv[]) {
         if (jalan)
             DrawJalan(0,0);
         */
-
+		
         for (int i=0;i<lookSize;i++) {
             for (int j=0;j<lookSize;j++) {
                 pixelMatrix[i][j] = petafix[i][j];
@@ -750,13 +814,18 @@ int main(int argc, char const *argv[]) {
         }
 
         drawTarget(100,100,2,rgb::RED);
-
         clipper(x_god,y_god,size_god);
         drawClips(100,700,lookSize-250);
-
+		//draw drone		
+		int x_ = rotateX (x, y, 1);
+		int y_ = rotateY (x, y, 1);
+		drawDrone (x_, y_, length, width, rgb::MAGENTA);
+		floodFill(x_, y_+10, rgb::MAGENTA, rgb::DARKGRAY);
+		x = x_; y = y_;
         DrawToScreen();
     } while (KeyPressed!='C');
-
+	
+	//pthread_join(d_Drone, NULL);
     munmap(fbp, screensize);
     close(fbfd);
 
