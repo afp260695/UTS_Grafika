@@ -637,7 +637,7 @@ void inputPeta() {
     peta_file.close();
 }
 
-void drawTarget(int x, int y, int scaling){
+void drawTarget(int x, int y, int scaling, rgb warna){
     //kelapa
     drawLine(rgb::WHITE, x, y, x+2*scaling, y);
     drawLine(rgb::WHITE, x+2*scaling, y, x+2*scaling, y+2*scaling);
@@ -654,8 +654,8 @@ void drawTarget(int x, int y, int scaling){
     drawLine(rgb::WHITE, x+4*scaling, y+2*scaling, x+4*scaling, y+6*scaling);
     drawLine(rgb::WHITE, x+4*scaling, y+6*scaling, x+2*scaling, y+6*scaling);
     //floodfill
-    floodFill(x+1*scaling, y+1*scaling, rgb::WHITE, rgb::RED);
-    floodFill(x+1*scaling, y+3*scaling, rgb::WHITE, rgb::RED);
+    floodFill(x+1*scaling, y+1*scaling, rgb::WHITE, warna);
+    floodFill(x+1*scaling, y+3*scaling, rgb::WHITE, warna);
 }
 
 
@@ -749,7 +749,7 @@ int main(int argc, char const *argv[]) {
             }
         }
 
-        drawTarget(100,100,2);
+        drawTarget(100,100,2,rgb::RED);
 
         clipper(x_god,y_god,size_god);
         drawClips(100,700,lookSize-250);
