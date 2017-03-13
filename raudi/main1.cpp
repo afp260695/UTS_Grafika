@@ -41,6 +41,12 @@ typedef struct rgb {
     static const rgb RED;
     static const rgb MAGENTA;
     static const rgb DARKGRAY;
+    static const rgb TARGET1;
+    static const rgb TARGET2;
+    static const rgb TARGET3;
+    static const rgb TARGET4;
+    static const rgb TARGET5;
+    static const rgb TARGET6;
     bool operator== (const rgb &c) {
         return (r == c.r && g == c.g && b == c.b);
     }
@@ -54,6 +60,12 @@ const rgb rgb::GREEN = {0, 255, 0};
 const rgb rgb::RED = {255, 0, 0};
 const rgb rgb::MAGENTA = {255, 0, 255};
 const rgb rgb::DARKGRAY = {112, 128, 144};
+const rgb rgb::TARGET1 = {254, 0, 0};
+const rgb rgb::TARGET2 = {253, 0, 0};
+const rgb rgb::TARGET3 = {252, 0, 0};
+const rgb rgb::TARGET4 = {251, 0, 0};
+const rgb rgb::TARGET5 = {250, 0, 0};
+const rgb rgb::TARGET6 = {249, 0, 0};
 
 
 typedef struct {
@@ -95,6 +107,7 @@ bool arrstop[jumlahTarget];
 
 int arrtargetx[jumlahTarget];
 int arrtargety[jumlahTarget];
+rgb arrwarnatarget[jumlahTarget];
 bool arrtargetalive[jumlahTarget];
 
 
@@ -383,9 +396,9 @@ void drawFrame() {
 }
 
 void fire() {
-    for (int i = 0; i < N_TARGET; i++) {
-        if (targetColor[i] == clipperMatrix[lookSize/2][lookSize/2]) {
-            isTargetShot[i] = true;
+    for (int i = 0; i < jumlahTarget; i++) {
+        if (arrwarnatarget[i] == clipperMatrix[(lookSize-250)/2][(lookSize-250)/2]) {
+            arrtargetalive[i] = false;
         }
     }
 }
@@ -423,7 +436,7 @@ void drawKeyClip(){
 void drawClipPointer() {
     int center = (lookSize-250)/2;
     if (mode == 0) {
-        for(int i = 0; i < 10; i++) {
+        for(int i = 1; i < 10; i++) {
             clipperMatrix[center + i][center] = rgb::WHITE;
             clipperMatrix[center - i][center] = rgb::WHITE;
             clipperMatrix[center][center + i] = rgb::WHITE;
@@ -432,10 +445,12 @@ void drawClipPointer() {
     } else {
         for(int i = 0; i < 3; i++) {
             for (int j = 0; j < 3-i; j++) {
-                clipperMatrix[center + i][center+j] = rgb::WHITE;
-                clipperMatrix[center + i][center-j] = rgb::WHITE;
-                clipperMatrix[center - i][center+j] = rgb::WHITE;
-                clipperMatrix[center - i][center-j] = rgb::WHITE;
+                if (!(i == 0 && j == 0)) {
+                    clipperMatrix[center + i][center+j] = rgb::WHITE;
+                    clipperMatrix[center + i][center-j] = rgb::WHITE;
+                    clipperMatrix[center - i][center+j] = rgb::WHITE;
+                    clipperMatrix[center - i][center-j] = rgb::WHITE;
+                }
             }
         }
     }
@@ -574,7 +589,7 @@ int rotateX (int x, int y, int degree) {
 	int yt = 100;
 	x -= xt;
 	y -= yt;
-	float xtemp = x * c - y * s; 
+	float xtemp = x * c - y * s;
 	return (xtemp + xt);
 }
 
@@ -586,7 +601,7 @@ int rotateY (int x, int y, int degree) {
 	int yt = 100;
 	x -= xt;
 	y -= yt;
-	float ytemp = x * s + y * c; 
+	float ytemp = x * s + y * c;
 	return (ytemp + yt);
 }
 
@@ -764,9 +779,9 @@ void drawTarget(int x, int y, int scaling, rgb warna, rgb batas){
     drawKepala(x,y,scaling,warna,batas);
 
     //badan
-    drawBadan(x,y,scaling,warna,batas);   
+    drawBadan(x,y,scaling,warna,batas);
     //floodfill
-    
+
 }
 
 
@@ -845,7 +860,7 @@ void *drawDroneThread(void *args){
 
 int main(int argc, char const *argv[]) {
     clearMatrix();
-	
+
     int fbfd = 0;
     long int screensize = 0;
     bool exploded = false;
@@ -895,12 +910,12 @@ int main(int argc, char const *argv[]) {
 	int width = 20;
 	int x = 200;
 	int y = 200;
-	int i = 0;	
+	int i = 0;
 	int posx = 100;
 	int posy = 100;
 	int direction = 0;
 	int scaling = 2;
-	
+
 	for(int i = 0;i < jumlahTarget;i++) {
 		arrkecy[i] = 0;
 		arrkecx[i] = 1;
@@ -911,6 +926,12 @@ int main(int argc, char const *argv[]) {
 		arrtargetalive[i] = true;
 		arrtargetujung[i] = 0;
 	}
+	arrwarnatarget[0] = rgb::TARGET1;
+	arrwarnatarget[1] = rgb::TARGET2;
+	arrwarnatarget[2] = rgb::TARGET3;
+	arrwarnatarget[3] = rgb::TARGET4;
+	arrwarnatarget[4] = rgb::TARGET5;
+	arrwarnatarget[5] = rgb::TARGET6;
 
     do {
         clearMatrix();
@@ -923,7 +944,7 @@ int main(int argc, char const *argv[]) {
         vector<Building> B;
 
         readBangunanFromFile(myfile, B);
-		
+
 		//draw bangunan
         if (bangunan) {
             drawBangunan(B);
@@ -938,10 +959,10 @@ int main(int argc, char const *argv[]) {
         //draw jalan
         if (jalan)
             DrawJalan(0,0);
-		
+
 		for(int i = 0;i < jumlahTarget;i++) {
 			if(arrtargetalive[i]){
-				drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED, rgb::WHITE);
+				drawTarget(arrtargetx[i],arrtargety[i],scaling,arrwarnatarget[i], rgb::WHITE);
 
 				arrtargetx[i] = arrtargetx[i] + 5*arrtargetdir[i];
 				arrtargetujung[i] += arrtargetdir[i];
@@ -953,7 +974,7 @@ int main(int argc, char const *argv[]) {
 				}
 			} else {
 				//kecy = 0;
-				
+
 				if (!arrstop[i]) {
 					if (arrkepalay[i] < arrkepalay[i]+8*scaling){
 						arrkepalax[i] += arrkecx[i];
@@ -973,7 +994,7 @@ int main(int argc, char const *argv[]) {
 				}
 			}
 		}
-		
+
 		/*for (int i=0;i<lookSize;i++) {
             for (int j=0;j<lookSize;j++) {
                 pixelMatrix[i][j] = petafix[i][j];
@@ -997,18 +1018,20 @@ int main(int argc, char const *argv[]) {
 			direction = 1;
 		}*/
 		drawCircle(100,520,20);
-        
-        clipper(x_god,y_god,size_god);
-        drawClips(100,700,lookSize-250);
-		//draw drone		
+
+        //draw drone
 		int x_ = rotateX (x, y, 1);
 		int y_ = rotateY (x, y, 1);
 		drawDrone (x_, y_, length, width, rgb::MAGENTA);
 		floodFill(x_, y_+10, rgb::MAGENTA, rgb::DARKGRAY);
 		x = x_; y = y_;
+
+        clipper(x_god,y_god,size_god);
+        drawClips(100,700,lookSize-250);
+
         DrawToScreen();
     } while (KeyPressed!='C');
-	
+
 	//pthread_join(d_Drone, NULL);
     munmap(fbp, screensize);
     close(fbfd);
