@@ -18,7 +18,7 @@ using namespace std;
 
 #define WIDTH 1300
 #define HEIGHT 700
-#define lookSize 400
+#define lookSize 600
 
 typedef struct{
     int x;
@@ -34,6 +34,7 @@ typedef struct rgb {
     static const rgb YELLOW;
     static const rgb BLACK;
     static const rgb GREEN;
+    static const rgb RED;
     bool operator== (const rgb &c) {
         return (r == c.r && g == c.g && b == c.b);
     }
@@ -44,6 +45,7 @@ const rgb rgb::GRAY = {128, 128, 128};
 const rgb rgb::YELLOW = {255, 255, 0};
 const rgb rgb::BLACK = {0, 0, 0};
 const rgb rgb::GREEN = {0, 255, 0};
+const rgb rgb::RED = {255, 0, 0};
 
 typedef struct {
     double h;       // angle in degrees
@@ -67,7 +69,9 @@ int posY;
 int lastCorrectState = 's';
 bool exploded = false;
 
-rgb clipperMatrix[lookSize][lookSize];
+rgb clipperMatrix[lookSize-250][lookSize-250];
+
+rgb petafix[lookSize][lookSize];
 
 int x_god;
 int y_god;
@@ -392,9 +396,9 @@ void clipper(int y, int x, int size) {
 
     clearClipperMatrix();
 
-    for (i=0;i<lookSize;i++) {
-        for (j=0;j<lookSize;j++) {
-            clipperMatrix[i][j] = pixelMatrix[x+(i*size/lookSize)][y+(j*size/lookSize)];
+    for (i=0;i<lookSize-250;i++) {
+        for (j=0;j<lookSize-250;j++) {
+            clipperMatrix[i][j] = pixelMatrix[x+(i*size/(lookSize-250))][y+(j*size/(lookSize-250))];
         }
     }
 }
@@ -402,7 +406,9 @@ void clipper(int y, int x, int size) {
 
 void drawClips(int y, int x, int size) {
     int i,j;
-
+    /*ofstream peta("peta.txt");
+    
+    peta << "ngewe";*/
     drawLine(rgb::YELLOW, x-1,y-1,x+size,y-1);
     drawLine(rgb::YELLOW, x+size,y-1,x+size,y+size);
     drawLine(rgb::YELLOW, x+size,y+size,x-1,y+size);
@@ -411,8 +417,16 @@ void drawClips(int y, int x, int size) {
     for (i=0;i<size;i++) {
         for (j=0;j<size;j++) {
             pixelMatrix[x+i][y+j] = clipperMatrix[i][j];
+            /*peta << clipperMatrix[i][j].r;
+            peta << "\n";
+            peta << clipperMatrix[i][j].g;
+            peta << "\n";
+            peta << clipperMatrix[i][j].b;
+            peta << "\n";
+            */
         }
     }
+    //peta.close();
 
 }
 
@@ -604,6 +618,46 @@ void colorBangunan() {
     floodFill(3, 3, rgb::WHITE, rgb::BLACK);
 }
 
+void inputPeta() {
+    ifstream peta_file("peta_tanpa_ngewe.txt");
+    string line;
+    string::size_type sz;
+    rgb temp;
+    for (int i=0;i<lookSize;i++) {
+        for (int j=0;j<lookSize;j++) {
+            getline(peta_file,line);
+            temp.r = atof(line.c_str());
+            getline(peta_file,line);
+            temp.g = atof(line.c_str());
+            getline(peta_file,line);
+            temp.b = atof(line.c_str());
+            petafix[i][j] = temp;
+        }
+    }
+    peta_file.close();
+}
+
+void drawTarget(int x, int y, int scaling){
+    //kelapa
+    drawLine(rgb::WHITE, x, y, x+2*scaling, y);
+    drawLine(rgb::WHITE, x+2*scaling, y, x+2*scaling, y+2*scaling);
+    drawLine(rgb::WHITE, x, y, x, y+2*scaling);
+    //badan
+    drawLine(rgb::WHITE, x-2*scaling, y+2*scaling, x+4*scaling, y+2*scaling);
+    drawLine(rgb::WHITE, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
+    drawLine(rgb::WHITE, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
+    drawLine(rgb::WHITE, x-2*scaling, y+6*scaling, x, y+6*scaling);
+    drawLine(rgb::WHITE, x, y+6*scaling, x, y+4*scaling);
+    drawLine(rgb::WHITE, x, y+6*scaling, x, y+8*scaling);
+    drawLine(rgb::WHITE, x, y+8*scaling, x+2*scaling, y+8*scaling);
+    drawLine(rgb::WHITE, x+2*scaling, y+8*scaling, x+2*scaling, y+4*scaling);
+    drawLine(rgb::WHITE, x+4*scaling, y+2*scaling, x+4*scaling, y+6*scaling);
+    drawLine(rgb::WHITE, x+4*scaling, y+6*scaling, x+2*scaling, y+6*scaling);
+    //floodfill
+    floodFill(x+1*scaling, y+1*scaling, rgb::WHITE, rgb::RED);
+    floodFill(x+1*scaling, y+3*scaling, rgb::WHITE, rgb::RED);
+}
+
 
 
 int main(int argc, char const *argv[]) {
@@ -613,9 +667,9 @@ int main(int argc, char const *argv[]) {
     long int screensize = 0;
     bool exploded = false;
 
-    x_god = 50;
-    y_god = 50;
-    size_god = 100;
+    x_god = 0;
+    y_god = 0;
+    size_god = 420;
 
     fbfd = open("/dev/fb0", O_RDWR);
     if (fbfd == -1) {
@@ -652,8 +706,8 @@ int main(int argc, char const *argv[]) {
 
     int xawal = 100, yawal = 150;
     bool left = true;
-
-
+    inputPeta();
+    
     do {
         clearMatrix();
         drawFrame();
@@ -674,7 +728,7 @@ int main(int argc, char const *argv[]) {
         readBangunanFromFile(myfile, B);
 
         //draw bangunan
-        if (bangunan) {
+        /*if (bangunan) {
             drawBangunan(B);
             colorBangunan();
         }
@@ -687,10 +741,18 @@ int main(int argc, char const *argv[]) {
         //draw jalan
         if (jalan)
             DrawJalan(0,0);
+        */
 
+        for (int i=0;i<lookSize;i++) {
+            for (int j=0;j<lookSize;j++) {
+                pixelMatrix[i][j] = petafix[i][j];
+            }
+        }
+
+        drawTarget(100,100,2);
 
         clipper(x_god,y_god,size_god);
-        drawClips(50,750,lookSize);
+        drawClips(100,700,lookSize-250);
 
         DrawToScreen();
     } while (KeyPressed!='C');
