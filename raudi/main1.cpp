@@ -75,8 +75,8 @@ typedef struct {
 } hsv;
 
 
-const int MAP_WIDTH = 363;
-const int MAP_HEIGHT = 419;
+const int MAP_WIDTH = 442;
+const int MAP_HEIGHT = 520;
 
 static rgb   hsv2rgb(hsv in);
 
@@ -936,10 +936,10 @@ int main(int argc, char const *argv[]) {
     do {
         clearMatrix();
         drawFrame();
-        drawLine(rgb::WHITE, 0, 0, 363, 0);
-        drawLine(rgb::WHITE, 0, 0, 0, 419);
-        drawLine(rgb::WHITE, 0, 419, 363, 419);
-        drawLine(rgb::WHITE, 363, 0, 363, 419);
+        drawLine(rgb::WHITE, 0, 0, 442, 0);
+        drawLine(rgb::WHITE, 0, 0, 0, 520);
+        drawLine(rgb::WHITE, 0, 520, 442, 520);
+        drawLine(rgb::WHITE, 442, 0, 442, 520);
         ifstream myfile;
         vector<Building> B;
 
