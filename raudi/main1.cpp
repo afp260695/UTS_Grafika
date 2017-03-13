@@ -20,6 +20,7 @@ using namespace std;
 #define WIDTH 1300
 #define HEIGHT 700
 #define lookSize 600
+#define jumlahTarget 6
 pthread_t d_Drone;
 #define N_TARGET 6
 
@@ -81,6 +82,21 @@ int mode = 0;
 //Array
 rgb targetColor[6];
 bool isTargetShot[6];
+
+int arrkepalax[jumlahTarget];
+int arrkepalay[jumlahTarget];
+int arrbadanx[jumlahTarget];
+int arrbadany[jumlahTarget];
+int arrkecx[jumlahTarget];
+int arrkecy[jumlahTarget];
+int arrtargetdir[jumlahTarget];
+int arrtargetujung[jumlahTarget];
+bool arrstop[jumlahTarget];
+
+int arrtargetx[jumlahTarget];
+int arrtargety[jumlahTarget];
+bool arrtargetalive[jumlahTarget];
+
 
 rgb clipperMatrix[lookSize-250][lookSize-250];
 
@@ -726,25 +742,61 @@ void inputPeta() {
     peta_file.close();
 }
 
-void drawTarget(int x, int y, int scaling, rgb warna){
+void drawKepala(int x, int y, int scaling, rgb warna, rgb batas){
+    drawLine(batas, x, y, x+2*scaling, y);
+    drawLine(batas, x+2*scaling, y, x+2*scaling, y+2*scaling);
+    drawLine(batas, x, y, x, y+2*scaling);
+    drawLine(batas, x, y+2*scaling, x+2*scaling, y+2*scaling);
+    floodFill(x+1, y+1, rgb::WHITE, warna);
+}
+
+void drawBadan(int x, int y, int scaling, rgb warna, rgb batas){
+     drawLine(batas, x-2*scaling, y+2*scaling, x+4*scaling, y+2*scaling);
+    drawLine(batas, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
+    drawLine(batas, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
+    drawLine(batas, x-2*scaling, y+6*scaling, x, y+6*scaling);
+    drawLine(batas, x, y+6*scaling, x, y+4*scaling);
+    drawLine(batas, x, y+6*scaling, x, y+8*scaling);
+    drawLine(batas, x, y+8*scaling, x+2*scaling, y+8*scaling);
+    drawLine(batas, x+2*scaling, y+8*scaling, x+2*scaling, y+4*scaling);
+    drawLine(batas, x+4*scaling, y+2*scaling, x+4*scaling, y+6*scaling);
+    drawLine(batas, x+4*scaling, y+6*scaling, x+2*scaling, y+6*scaling);
+    floodFill(x+1, y+3*scaling, rgb::WHITE, warna);
+}
+
+void drawTarget(int x, int y, int scaling, rgb warna, rgb batas){
     //kelapa
-    drawLine(rgb::WHITE, x, y, x+2*scaling, y);
-    drawLine(rgb::WHITE, x+2*scaling, y, x+2*scaling, y+2*scaling);
-    drawLine(rgb::WHITE, x, y, x, y+2*scaling);
+    drawKepala(x,y,scaling,warna,batas);
+
     //badan
-    drawLine(rgb::WHITE, x-2*scaling, y+2*scaling, x+4*scaling, y+2*scaling);
-    drawLine(rgb::WHITE, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
-    drawLine(rgb::WHITE, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
-    drawLine(rgb::WHITE, x-2*scaling, y+6*scaling, x, y+6*scaling);
-    drawLine(rgb::WHITE, x, y+6*scaling, x, y+4*scaling);
-    drawLine(rgb::WHITE, x, y+6*scaling, x, y+8*scaling);
-    drawLine(rgb::WHITE, x, y+8*scaling, x+2*scaling, y+8*scaling);
-    drawLine(rgb::WHITE, x+2*scaling, y+8*scaling, x+2*scaling, y+4*scaling);
-    drawLine(rgb::WHITE, x+4*scaling, y+2*scaling, x+4*scaling, y+6*scaling);
-    drawLine(rgb::WHITE, x+4*scaling, y+6*scaling, x+2*scaling, y+6*scaling);
+    drawBadan(x,y,scaling,warna,batas);   
     //floodfill
-    floodFill(x+1*scaling, y+1*scaling, rgb::WHITE, warna);
-    floodFill(x+1*scaling, y+3*scaling, rgb::WHITE, warna);
+    
+}
+
+
+void destroyTarget(int x, int y, int scaling, rgb warna,rgb batas){
+    int kecx = -1;
+    int kecy = 1;
+    bool stop = false;
+    while(!stop){
+        kecy = 0;
+        while (y < y+8*scaling){
+            x += kecx;
+            y += kecy;
+            kecy++;
+        }
+        if (kecy < 2) {
+            stop = true;
+        }
+        while (kecy > 0) {
+            x += kecx;
+            y -= kecy;
+            kecy -= 2;
+        }
+        drawKepala(x,y,scaling,warna,batas);
+        sleep(1000);
+    }
 }
 
 void *drawDroneThread(void *args){
@@ -762,7 +814,6 @@ void *drawDroneThread(void *args){
 			floodFill(x_, y_+10, rgb::WHITE, rgb::BLACK);
 			drawDrone (x_, y_, length, width, rgb::BLACK);
 			x = x_; y = y_;
-			//cout << "hai" << endl;
 		}
 }
 
@@ -818,6 +869,23 @@ int main(int argc, char const *argv[]) {
 	int width = 20;
 	int x = 200;
 	int y = 200;
+	int i = 0;	
+	int posx = 100;
+	int posy = 100;
+	int direction = 0;
+	int scaling = 2;
+	
+	for(int i = 0;i < jumlahTarget;i++) {
+		arrkecy[i] = 0;
+		arrkecx[i] = 1;
+		arrtargetx[i] = 25*(i+1);
+		arrtargety[i] = 25*(i+1);
+		arrtargetdir[i] = 0;
+		arrstop[i] = false;
+		arrtargetalive[i] = true;
+		arrtargetujung[i] = 0;
+	}
+
     do {
         clearMatrix();
         drawFrame();
@@ -851,8 +919,59 @@ int main(int argc, char const *argv[]) {
                 pixelMatrix[i][j] = petafix[i][j];
             }
         }
+		
+		for(int i = 0;i < jumlahTarget;i++) {
+			if(arrtargetalive[i]){
+				drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED, rgb::WHITE);
 
-        drawTarget(100,100,2,rgb::RED);
+				arrtargetx[i] = arrtargetx[i] + 5*arrtargetdir[i];
+				arrtargetujung[i] += arrtargetdir[i];
+				if (arrtargetujung[i] >= 10){
+					arrtargetdir[i] = -1;
+				}
+				if (arrtargetujung[i] <= 0) {
+					arrtargetdir[i] = 1;
+				}
+			} else {
+				//kecy = 0;
+				
+				if (!arrstop[i]) {
+					if (arrkepalay[i] < arrkepalay[i]+8*scaling){
+						arrkepalax[i] += arrkecx[i];
+						arrkepalay[i] += arrkecy[i];
+						arrkecy[i]++;
+					}
+					if (arrkecy[i] < 2) {
+						arrstop[i] = true;
+					}
+					if (arrkecy[i] > 0) {
+						arrkepalax[i] += arrkecx[i];
+						arrkepalay[i] -= arrkecy[i];
+						arrkecy[i] -= 2;
+					}
+					drawKepala(arrkepalax[i],arrkepalay[i],scaling,rgb::RED, rgb::WHITE);
+					//sleep(5);
+				}
+			}
+		}
+		/*drawTarget(posx,posy,scaling,rgb::RED, rgb::WHITE);
+
+		//DrawToScreen();
+		//floodFill(posx+1*scaling, posy+1*scaling, rgb::WHITE, rgb::BLACK);
+		//floodFill(posx+1*scaling, posy+3*scaling, rgb::WHITE, rgb::BLACK);
+		//sleep(1000);
+		//drawTarget(posx,posy,scaling,rgb::BLACK, rgb::BLACK);
+
+		//
+		posx = posx + 5*direction;
+		i += direction;
+		if (i >= 10){
+			direction = -1;
+		}
+		if (i <= 0) {
+			direction = 1;
+		}*/
+		
         clipper(x_god,y_god,size_god);
         drawClips(100,700,lookSize-250);
 		//draw drone		
