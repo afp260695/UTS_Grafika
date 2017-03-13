@@ -320,63 +320,58 @@ void lineRotation(int x1, int y1, int x2, int y2, double derajatRotasi){
 void DrawJalan(int x, int y) {
 
     rgb roadColor = rgb::GRAY;
-    drawLine(roadColor, 46,404,43,414); drawLine(roadColor, 44,404,41,414);
-    drawLine(roadColor, 46,404,9,280); drawLine(roadColor, 43,404,7,280);
-    drawLine(roadColor, 45,407,151,377); drawLine(roadColor, 45,403,151,373);
-    drawLine(roadColor, 153,376,149,414); drawLine(roadColor, 150,376,147,414);
-    drawLine(roadColor, 151,378,181,374); drawLine(roadColor, 151,374,181,370);
-    drawLine(roadColor, 181,373,287,403); drawLine(roadColor, 181,371,287,401);
-    drawLine(roadColor, 288,402,288,414); drawLine(roadColor, 285,402,285,414);
-    drawLine(roadColor, 287,404,356,404); drawLine(roadColor, 287,401,356,401);
-    //itb kanan
-    drawLine(roadColor, 308,231,310,297); drawLine(roadColor, 305,231,307,297);
-    drawLine(roadColor, 308,297,292,300); drawLine(roadColor, 308,297,292,300);
-    drawLine(roadColor, 292,302,291,337); drawLine(roadColor, 292,299,291,334);
-    drawLine(roadColor, 291,337,287,404); drawLine(roadColor, 291,334,287,401);
-    drawLine(roadColor, 268,231,268,12); drawLine(roadColor, 265,231,265,12);
-    drawLine(roadColor, 268,50,343,56); drawLine(roadColor, 265,50,340,56);
-    drawLine(roadColor, 266,113,326,118); drawLine(roadColor, 266,110,326,115);
-    drawLine(roadColor, 266,134,326,138); drawLine(roadColor, 266,131,326,135);
-    //itb tengah
-    drawLine(roadColor, 184,372,184,335); drawLine(roadColor, 178,372,178,335);
-    drawLine(roadColor, 181,337,71,337); drawLine(roadColor, 181,333,71,333);
-    drawLine(roadColor, 184,335,184,231); drawLine(roadColor, 178,335,178,231);
-    drawLine(roadColor, 181,233,58,233); drawLine(roadColor, 181,230,58,230);
-    drawLine(roadColor, 58,233,23,233); drawLine(roadColor, 58,230,23,230);
-    drawLine(roadColor, 181,233,306,233); drawLine(roadColor, 181,230,306,230);
-    drawLine(roadColor, 181,337,291,337); drawLine(roadColor, 181,334,291,334);
-    //drawLine(rgb::WHITE, 181,335,291,335);
-
-    drawLine(roadColor, 184,231,184,160); drawLine(roadColor, 178,231,178,160);
-    drawLine(roadColor, 184,160,184,83); drawLine(roadColor, 178,160,178,83);
-    drawLine(roadColor, 184,29,184,16); drawLine(roadColor, 178,29,178,16);
-    drawLine(roadColor, 80,18,181,18); drawLine(roadColor, 80,15,181,15);
-    drawLine(roadColor, 181,18,219,1); drawLine(roadColor, 181,15,219,0);
-    //itb kiri
-    drawLine(roadColor, 22,231,22,294); drawLine(roadColor, 24,231,24,294);
-    drawLine(roadColor, 23,293,44,329); drawLine(roadColor, 23,295,44,331);
-    drawLine(roadColor, 44,329,71,334); drawLine(roadColor, 44,331,71,336);
-    drawLine(roadColor, 57,231,57,315); drawLine(roadColor, 59,231,59,315);
-    drawLine(roadColor, 57,315,70,335); drawLine(roadColor, 59,315,72,335);
-    drawLine(roadColor, 21,231,23,173); drawLine(roadColor, 25,231,27,173);
-    drawLine(roadColor, 25,171,82,171); drawLine(roadColor, 25,175,82,175);
-    drawLine(roadColor, 82,172,95,172); drawLine(roadColor, 82,174,95,174);
-    drawLine(roadColor, 94,173,94,199); drawLine(roadColor, 96,173,96,199);
-    drawLine(roadColor, 95,198,102,201); drawLine(roadColor, 95,200,102,203);
-    drawLine(roadColor, 101,202,102,231); drawLine(roadColor, 103,202,104,231);
-    drawLine(roadColor, 107,83,108,28); drawLine(roadColor, 104,83,105,28);
-    drawLine(roadColor, 107,30,266,35); drawLine(roadColor, 107,27,266,32);
-    drawLine(roadColor, 83,173,83,83); drawLine(roadColor, 81,173,81,83);
-    drawLine(roadColor, 82,85,266,85); drawLine(roadColor, 82,82,266,82);
-    drawLine(roadColor, 82,120,266,120); drawLine(roadColor, 82,117,266,117);
-    drawLine(roadColor, 82,162,266,162); drawLine(roadColor, 82,159,266,159);
-    drawLine(roadColor, 27,173,29,46); drawLine(roadColor, 24,173,26,46);
-    drawLine(roadColor, 29,47,52,29); drawLine(roadColor, 27,45,50,27);
-    drawLine(roadColor, 52,29,81,29); drawLine(roadColor, 50,27,79,27);
-    drawLine(roadColor, 82,28,82,16); drawLine(roadColor, 79,28,79,16);
-    drawLine(roadColor, 80,17,48,17); drawLine(roadColor, 80,15,48,15);
-    drawLine(roadColor, 49,17,22,51); drawLine(roadColor, 47,15,20,49);
-    drawLine(roadColor, 22,50,9,280); drawLine(roadColor, 20,50,7,280);
+	drawLine(roadColor,58,505,54,518);drawLine(roadColor,55,505,51,518);
+	drawLine(roadColor,58,505,11,350);drawLine(roadColor,54,505,9,350);
+	drawLine(roadColor,56,509,189,471);drawLine(roadColor,56,504,189,466);
+	drawLine(roadColor,191,470,186,518);drawLine(roadColor,188,470,184,518);
+	drawLine(roadColor,189,473,226,468);drawLine(roadColor,189,468,226,463);
+	drawLine(roadColor,226,466,359,504);drawLine(roadColor,226,464,359,501);
+	drawLine(roadColor,360,503,360,518);drawLine(roadColor,356,503,356,518);
+	drawLine(roadColor,359,505,445,505);drawLine(roadColor,359,501,445,501);
+	drawLine(roadColor,385,289,388,371);drawLine(roadColor,381,289,384,371);
+	drawLine(roadColor,385,371,365,375);drawLine(roadColor,385,371,365,375);
+	drawLine(roadColor,365,378,364,421);drawLine(roadColor,365,374,364,418);
+	drawLine(roadColor,364,421,359,505);drawLine(roadColor,364,418,359,501);
+	drawLine(roadColor,335,289,335,15);drawLine(roadColor,331,289,331,15);
+	drawLine(roadColor,335,63,429,70);drawLine(roadColor,331,63,425,70);
+	drawLine(roadColor,333,141,408,148);drawLine(roadColor,333,138,408,144);
+	drawLine(roadColor,333,168,408,173);drawLine(roadColor,333,164,408,169);
+	drawLine(roadColor,230,465,230,419);drawLine(roadColor,223,465,223,419);
+	drawLine(roadColor,226,421,89,421);drawLine(roadColor,226,416,89,416);
+	drawLine(roadColor,230,419,230,289);drawLine(roadColor,223,419,223,289);
+	drawLine(roadColor,226,291,73,291);drawLine(roadColor,226,288,73,288);
+	drawLine(roadColor,73,291,29,291);drawLine(roadColor,73,288,29,288);
+	drawLine(roadColor,226,291,383,291);drawLine(roadColor,226,288,383,288);
+	drawLine(roadColor,226,421,364,421);drawLine(roadColor,226,418,364,418);
+	drawLine(roadColor,230,289,230,200);drawLine(roadColor,223,289,223,200);
+	drawLine(roadColor,230,200,230,104);drawLine(roadColor,223,200,223,104);
+	drawLine(roadColor,230,36,230,20);drawLine(roadColor,223,36,223,20);
+	drawLine(roadColor,100,23,226,23);drawLine(roadColor,100,19,226,19);
+	drawLine(roadColor,226,23,274,1);drawLine(roadColor,226,19,274,0);
+	drawLine(roadColor,28,289,28,368);drawLine(roadColor,30,289,30,368);
+	drawLine(roadColor,29,366,55,411);drawLine(roadColor,29,369,55,414);
+	drawLine(roadColor,55,411,89,418);drawLine(roadColor,55,414,89,420);
+	drawLine(roadColor,71,289,71,394);drawLine(roadColor,74,289,74,394);
+	drawLine(roadColor,71,394,88,419);drawLine(roadColor,74,394,90,419);
+	drawLine(roadColor,26,289,29,216);drawLine(roadColor,31,289,34,216);
+	drawLine(roadColor,31,214,103,214);drawLine(roadColor,31,219,103,219);
+	drawLine(roadColor,103,215,119,215);drawLine(roadColor,103,218,119,218);
+	drawLine(roadColor,118,216,118,249);drawLine(roadColor,120,216,120,249);
+	drawLine(roadColor,119,248,128,251);drawLine(roadColor,119,250,128,254);
+	drawLine(roadColor,126,253,128,289);drawLine(roadColor,129,253,130,289);
+	drawLine(roadColor,134,104,135,35);drawLine(roadColor,130,104,131,35);
+	drawLine(roadColor,134,38,333,44);drawLine(roadColor,134,34,333,40);
+	drawLine(roadColor,104,216,104,104);drawLine(roadColor,101,216,101,104);
+	drawLine(roadColor,103,106,333,106);drawLine(roadColor,103,103,333,103);
+	drawLine(roadColor,103,150,333,150);drawLine(roadColor,103,146,333,146);
+	drawLine(roadColor,103,203,333,203);drawLine(roadColor,103,199,333,199);
+	drawLine(roadColor,34,216,36,58);drawLine(roadColor,30,216,33,58);
+	drawLine(roadColor,36,59,65,36);drawLine(roadColor,34,56,63,34);
+	drawLine(roadColor,65,36,101,36);drawLine(roadColor,63,34,99,34);
+	drawLine(roadColor,103,35,103,20);drawLine(roadColor,99,35,99,20);
+	drawLine(roadColor,100,21,60,21);drawLine(roadColor,100,19,60,19);
+	drawLine(roadColor,61,21,28,64);drawLine(roadColor,59,19,25,61);
+	drawLine(roadColor,28,63,11,350);drawLine(roadColor,25,63,9,350);
 
 }
 
@@ -519,37 +514,37 @@ void drawPohon(int x, int y, int size) {
 }
 
 void drawAllPohon() {
-    drawPohon(21,14,10);
-    drawPohon(40,40,7);
-    drawPohon(40,54,7);
-    drawPohon(32,65,6);
-    drawPohon(32,54,7);
-    drawPohon(79,73,7);
-    drawPohon(88,62,11);
-    drawPohon(34,88,8);
-    drawPohon(34,102,8);
-    drawPohon(63,141,10);
-    drawPohon(128,89,10);
-    drawPohon(128,102,10);
-    drawPohon(128,125,10);
-    drawPohon(128,143,10);
-    drawPohon(38,179,13);
-    drawPohon(32,210,17);
-    drawPohon(194,16,10);
-    drawPohon(216,16,10);
-    drawPohon(233,16,10);
-    drawPohon(250,16,10);
-    drawPohon(317,16,29);
-    drawPohon(337,132,16);
-    drawPohon(251,123,10);
-    drawPohon(251,143,10);
-    drawPohon(251,88,10);
-    drawPohon(251,102,10);
-    drawPohon(333,176,19);
-    drawPohon(328,217,24);
-    drawPohon(316,262,32);
-    drawPohon(309,309,36);
-    drawPohon(276,87,12);
+    drawPohon(26,18,13);
+	drawPohon(50,50,9);
+	drawPohon(50,68,9);
+	drawPohon(40,81,8);
+	drawPohon(40,68,9);
+	drawPohon(99,91,9);
+	drawPohon(110,78,14);
+	drawPohon(43,110,10);
+	drawPohon(43,128,10);
+	drawPohon(79,176,13);
+	drawPohon(160,111,13);
+	drawPohon(160,128,13);
+	drawPohon(160,156,13);
+	drawPohon(160,179,13);
+	drawPohon(48,224,16);
+	drawPohon(40,263,21);
+	drawPohon(243,20,13);
+	drawPohon(270,20,13);
+	drawPohon(291,20,13);
+	drawPohon(313,20,13);
+	drawPohon(396,20,36);
+	drawPohon(421,165,20);
+	drawPohon(314,154,13);
+	drawPohon(314,179,13);
+	drawPohon(314,110,13);
+	drawPohon(314,128,13);
+	drawPohon(416,220,24);
+	drawPohon(410,271,30);
+	drawPohon(395,328,40);
+	drawPohon(386,386,45);
+	drawPohon(345,109,15);
 }
 
 // x and y are center point
@@ -596,7 +591,7 @@ int rotateY (int x, int y, int degree) {
 }
 
 void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
-    myfile.open ("bangunan.txt");
+    myfile.open ("bangunan2.txt");
 
     char c;
     char num[3]; int countchar = 0; int countline = 0;
@@ -799,6 +794,37 @@ void destroyTarget(int x, int y, int scaling, rgb warna,rgb batas){
     }
 }
 
+void drawCircle(int x0, int y0, int radius)
+{
+    int x = radius;
+    int y = 0;
+    int err = 0;
+
+    while (x >= y)
+    {
+        drawPoint(rgb::WHITE, x0 - x, y0 + y);
+        drawPoint(rgb::WHITE, x0 - y, y0 + x);
+        drawPoint(rgb::WHITE, x0 - y, y0 - x);
+        drawPoint(rgb::WHITE, x0 - x, y0 - y);
+        drawPoint(rgb::WHITE, x0 + x, y0 + y);
+        drawPoint(rgb::WHITE, x0 + y, y0 + x);
+        drawPoint(rgb::WHITE, x0 + y, y0 - x);
+        drawPoint(rgb::WHITE, x0 + x, y0 - y);
+
+        if (err <= 0)
+        {
+            y += 1;
+            err += 2*y + 1;
+        }
+        if (err > 0)
+        {
+            x -= 1;
+            err -= 2*x + 1;
+        }
+    }
+    floodFill(x0,y0,rgb::WHITE,rgb::GREEN);
+}
+
 void *drawDroneThread(void *args){
 		//draw drone
         int length = 50;
@@ -897,9 +923,9 @@ int main(int argc, char const *argv[]) {
         vector<Building> B;
 
         readBangunanFromFile(myfile, B);
-
-        //draw bangunan
-        /*if (bangunan) {
+		
+		//draw bangunan
+        if (bangunan) {
             drawBangunan(B);
             colorBangunan();
         }
@@ -912,13 +938,6 @@ int main(int argc, char const *argv[]) {
         //draw jalan
         if (jalan)
             DrawJalan(0,0);
-        */
-		
-        for (int i=0;i<lookSize;i++) {
-            for (int j=0;j<lookSize;j++) {
-                pixelMatrix[i][j] = petafix[i][j];
-            }
-        }
 		
 		for(int i = 0;i < jumlahTarget;i++) {
 			if(arrtargetalive[i]){
@@ -954,6 +973,12 @@ int main(int argc, char const *argv[]) {
 				}
 			}
 		}
+		
+		/*for (int i=0;i<lookSize;i++) {
+            for (int j=0;j<lookSize;j++) {
+                pixelMatrix[i][j] = petafix[i][j];
+            }
+        }*/
 		/*drawTarget(posx,posy,scaling,rgb::RED, rgb::WHITE);
 
 		//DrawToScreen();
@@ -971,7 +996,8 @@ int main(int argc, char const *argv[]) {
 		if (i <= 0) {
 			direction = 1;
 		}*/
-		
+		drawCircle(100,520,20);
+        
         clipper(x_god,y_god,size_god);
         drawClips(100,700,lookSize-250);
 		//draw drone		
