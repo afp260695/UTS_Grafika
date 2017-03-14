@@ -95,10 +95,11 @@ int arrkecy[jumlahTarget];
 int arrtargetdir[jumlahTarget];
 int arrtargetujung[jumlahTarget];
 bool arrstop[jumlahTarget];
-
+bool arrturun[jumlahTarget];
 int arrtargetx[jumlahTarget];
 int arrtargety[jumlahTarget];
 bool arrtargetalive[jumlahTarget];
+int arrhitungan[jumlahTarget];
 
 
 rgb clipperMatrix[lookSize-250][lookSize-250];
@@ -939,25 +940,36 @@ void behaviourOrang(int i, int scaling, int speed, int range){
         arrkepalay[i] = arrtargety[i];
         arrkepalax[i] = arrtargetx[i];
     } else {
-        //kecy = 0;
-        
-        //if (!arrstop[i]) {
-            if (arrkepalay[i] < arrkepalay[i]+(8*scaling)){
-                arrkepalax[i] += arrkecx[i];
-                arrkepalay[i] += arrkecy[i];
-                arrkecy[i]++;
+        if (!arrstop[i]) {
+            if (arrturun[i]) {
+                if (arrkepalay[i] < arrtargety[i]+(8*scaling)){
+                    arrkepalax[i] += arrkecx[i];
+                    arrkepalay[i] += arrkecy[i];
+                    arrhitungan[i] ++;
+                    if ((arrhitungan[i] % 3) == 0) {
+                        arrkecy[i]++;   
+                    }
+                } else {
+                    arrturun[i] = false;
+                    arrhitungan[i] = 0;
+                }
+            } else {
+                if ((arrkecy[i] <= 1) && (arrkepalay[i] >= arrtargety[i]+(8*scaling))) {
+                    arrstop[i] = true;
+                }
+                if (arrkecy[i] > 0) {
+                    arrkepalax[i] += arrkecx[i];
+                    arrkepalay[i] -= arrkecy[i];
+                    if ((arrhitungan[i] % 3) == 0) {
+                        arrkecy[i] -= 2;   
+                    }
+                } else {
+                    arrturun[i] = true;
+                    arrhitungan[i] = 0;
+                }
             }
-            if (arrkecy[i] < 2) {
-                arrstop[i] = true;
-            }
-            if (arrkecy[i] > 0) {
-                arrkepalax[i] += arrkecx[i];
-                arrkepalay[i] -= arrkecy[i];
-                arrkecy[i] -= 2;
-            }
-            drawKepala(arrkepalax[i],arrkepalay[i],scaling,targetColor[i], rgb::MAGENTA2);
-            
-        //}
+        }
+        drawKepala(arrkepalax[i],arrkepalay[i],scaling,targetColor[i], rgb::MAGENTA2);
     }
 }
 
@@ -1023,6 +1035,8 @@ int main(int argc, char const *argv[]) {
 	for(int i = 0;i < jumlahTarget;i++) {
 		arrkecy[i] = 0;
 		arrkecx[i] = 1;
+        arrturun[i] = true;
+        arrhitungan[i] = 0;
         //posisi target
         if (i == 0){
             arrtargetx[i] = 25;
@@ -1101,9 +1115,6 @@ int main(int argc, char const *argv[]) {
             }
 			
 		}
-		//draw bangunan
-		
-        
         //draw jalan
         if (jalan)
             DrawJalan(0,0);
