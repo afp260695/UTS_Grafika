@@ -14,7 +14,7 @@ class Color
     	static const Color MAGENTA;
     	static const Color MAGENTA2;
     	static const Color DARKGRAY;*/
-    	static Color WHITE;
+    	/*static Color WHITE;
     	static Color GRAY;
     	static Color YELLOW;
     	static Color BLACK;
@@ -23,7 +23,7 @@ class Color
     	static Color RED2;
     	static Color MAGENTA;
     	static Color MAGENTA2;
-    	static Color DARKGRAY;
+    	static Color DARKGRAY;*/
 		// inline Color(double _r, double _g, double _b):r(_r),g(_g),b(_b) {
 
 		// }
@@ -67,7 +67,6 @@ class Color
 	    	return b;
 	    }
 
-	private:
 		double r;       // between 0 and 255
 	    double g;       // between 0 and 255
 	    double b;       // between 0 and 255
@@ -76,16 +75,7 @@ class Color
 
 #endif
 
-Color Color::WHITE = new Color(255,255,255);
-Color Color::GRAY = new Color(128, 128, 128);
-Color Color::YELLOW = new Color(255, 255, 0);
-Color Color::BLACK = new Color(0, 0, 0);
-Color Color::GREEN = new Color(0, 255, 0);
-Color Color::RED = new Color(255, 0, 0);
-Color Color::RED2 = new Color(254, 0, 0);
-Color Color::MAGENTA = new Color(255, 0, 255);
-Color Color::MAGENTA2 = new Color(255, 0, 254);
-Color Color::DARKGRAY = new Color(112, 128, 144);
+
 
 	/*static const Color WHITE = Color(255,255,255);
     	static const Color GRAY = Color(128, 128, 128);

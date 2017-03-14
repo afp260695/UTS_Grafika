@@ -27,13 +27,6 @@ using namespace std;
 #define lookSize 350
 #define nTarget 6
 
-typedef struct {
-    double h;       // angle in degrees
-    double s;       // a fraction between 0 and 1
-    double v;       // a fraction between 0 and 1
-} hsv;
-
-
 const int MAP_WIDTH = 442;
 const int MAP_HEIGHT = 520;
 
@@ -44,11 +37,7 @@ struct fb_fix_screeninfo finfo;
 char *fbp = 0;
 
 
-Target[] targets = new Target[nTarget];
-Drawer drawer = new Drawer();
-Drone drone = new Drone();
-Peta peta = new Peta();
-
+Target targets[nTarget];
 
 int x_god;
 int y_god;
@@ -57,10 +46,6 @@ int size_god;
 
 unsigned char* BMP;
 int BMP_width, BMP_height;
-
-typedef struct {
-    vector<int> points;
-} Building;
 
 bool pohon = true;
 bool jalan = true;
@@ -102,9 +87,9 @@ void DrawToScreen(){
                 //4byte
                 // printf("%ld %d\n", location,  screen_size);
                 if (location < screen_size && location > 0) {
-                    *(fbp + location) = pixelMatrix[x][y].b;        // Some blue
-                    *(fbp + location + 1) = pixelMatrix[x][y].g;     // A little green
-                    *(fbp + location + 2) = pixelMatrix[x][y].r;    // A lot of red
+                    *(fbp + location) = Drawer::getPixelMatrix(x,y).b;        // Some blue
+                    *(fbp + location + 1) = Drawer::getPixelMatrix(x,y).g;     // A little green
+                    *(fbp + location + 2) = Drawer::getPixelMatrix(x,y).r;    // A lot of red
                     *(fbp + location + 3) = 0;      // No transparency
                 }
             //location += 4;
@@ -116,6 +101,14 @@ void DrawToScreen(){
                 *((unsigned short int*)(fbp + location)) = t;
             }
         }
+}
+
+void fire() {
+    for (int i = 0; i < nTarget; i++) {
+        if (targets[i].targetColor == Drawer::getClipperMatrix((lookSize)/2,(lookSize)/2)) {
+            targets[i].targetAlive = false;
+        }
+    }
 }
 
 void listenerKeyStroke(){
@@ -142,85 +135,16 @@ void listenerKeyStroke(){
         } else if ((KeyPressed=='B') ||(KeyPressed=='b')) {
             bangunan = !bangunan;
         } else if ((KeyPressed=='M') ||(KeyPressed=='m')) {
-            mode = !mode;
+            Drawer::inverseMode();
         } else if (KeyPressed==' ') {
             fire();
         }
     }
 }
 
-void fire() {
-    for (int i = 0; i < nTarget; i++) {
-        if (targets[i].targetColor == drawer.clipperMatrix[(lookSize)/2][(lookSize)/2]) {
-            targets[i].targetAlive = false;
-        }
-    }
-}
-
-Color hsv2Color(hsv in)
-{
-    double      hh, p, q, t, ff;
-    long        i;
-    Color         out;
-
-    if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
-        out.r = in.v;
-        out.g = in.v;
-        out.b = in.v;
-        return out;
-    }
-
-    hh = in.h;
-    if(hh >= 360.0) hh = 0.0;
-    hh /= 60.0;
-    i = (long)hh;
-    ff = hh - i;
-    p = in.v * (1.0 - in.s);
-    q = in.v * (1.0 - (in.s * ff));
-    t = in.v * (1.0 - (in.s * (1.0 - ff)));
-
-    switch(i) {
-    case 0:
-        out.r = in.v;
-        out.g = t;
-        out.b = p;
-        break;
-    case 1:
-        out.r = q;
-        out.g = in.v;
-        out.b = p;
-        break;
-    case 2:
-        out.r = p;
-        out.g = in.v;
-        out.b = t;
-        break;
-
-    case 3:
-        out.r = p;
-        out.g = q;
-        out.b = in.v;
-        break;
-    case 4:
-        out.r = t;
-        out.g = p;
-        out.b = in.v;
-        break;
-    case 5:
-    default:
-        out.r = in.v;
-        out.g = p;
-        out.b = q;
-        break;
-    }
-    out.r *= 255;
-    out.g *= 255;
-    out.b *= 255;
-    return out;
-}
 
 int main(int argc, char const *argv[]) {
-    clearMatrix();
+    Drawer::clearMatrix();
 	
     int fbfd = 0;
     long int screensize = 0;
@@ -268,7 +192,6 @@ int main(int argc, char const *argv[]) {
 	int scaling = 2;
 	
 	for(int i = 0;i < nTarget;i++) {
-        targets[i] = new Target();
 		targets[i].kecY = 0;
 		targets[i].kecX = 1;
         //posisi target
@@ -296,11 +219,11 @@ int main(int argc, char const *argv[]) {
             targets[i].targetX = 310;
             targets[i].targetY = 375;
         }
-        Color temp = new Color();
-        temp.r = 254-i;
-        temp.g = 0;
-        temp.b = 0;
-        targets[i].targetColor = temp;
+        Color* temp = new Color();
+        temp->r = 254-i;
+        temp->g = 0;
+        temp->b = 0;
+        targets[i].targetColor = *temp;
 		
 		targets[i].targetDir = 0;
 		targets[i].stop = false;
@@ -308,24 +231,24 @@ int main(int argc, char const *argv[]) {
 		targets[i].targetUjung = 0;
 	}
     ifstream myfile;
-    peta.vector<Building> B;
+    vector<Building> B;
 
-    peta.readBangunanFromFile(myfile, B);
+    Peta::readBangunanFromFile(myfile, B);
     do {
-        clearMatrix();
-        drawer.drawFrame();
-        drawer.drawLine(Color::WHITE, 0, 0, 442, 0);
-        drawer.drawLine(Color::WHITE, 0, 0, 0, 520);
-        drawer.drawLine(Color::WHITE, 0, 520, 442, 520);
-        drawer.drawLine(Color::WHITE, 442, 0, 442, 520);
+        Drawer::clearMatrix();
+        Drawer::drawFrame();
+        Drawer::drawLine(*WHITE, 0, 0, 442, 0);
+        Drawer::drawLine(*WHITE, 0, 0, 0, 520);
+        Drawer::drawLine(*WHITE, 0, 520, 442, 520);
+        Drawer::drawLine(*WHITE, 442, 0, 442, 520);
         
 		if (bangunan) {
-            peta.drawBangunan(B);
+            Peta::drawBangunan(B);
         }
 		
 		// draw Pohon
         if (pohon)
-            peta.drawAllPohon();
+            Peta::drawAllPohon();
 		
         // perilaku target
 		for(int i = 0;i < nTarget;i++) {
@@ -354,18 +277,18 @@ int main(int argc, char const *argv[]) {
         
         //draw jalan
         if (jalan)
-            peta.DrawJalan(0,0);
+            Peta::DrawJalan(0,0);
             
 		
-		drawer.drawCircle(100,445,20);
+		Drawer::drawCircle(100,445,20);
         
-        drawer.clipper(x_god,y_god,size_god);
-        drawer.drawClips(100,700,lookSize);
+        Drawer::clipper(x_god,y_god,size_god);
+        Drawer::drawClips(100,700,lookSize);
 		//draw drone		
-		int x_ = rotateX (x, y, 1);
-		int y_ = rotateY (x, y, 1);
-		drone.drawDrone (x_, y_, length, width, Color::MAGENTA);
-		drawer.floodFill(x_, y_+10, Color::MAGENTA, Color::DARKGRAY);
+		int x_ = Drawer::rotateX (x, y, 1);
+		int y_ = Drawer::rotateY (x, y, 1);
+		Drone::drawDrone (x_, y_, length, width, *MAGENTA);
+		Drawer::floodFill(x_, y_+10, *MAGENTA, *DARKGRAY);
 		x = x_; y = y_;
         DrawToScreen();
     } while (KeyPressed!='C');

@@ -6,7 +6,7 @@ class Drone
 public:
 	Drone();
 	~Drone();
-	static void drawDrone (int x, int y, int width, int length, rgb dcolor) {
+	static void drawDrone (int x, int y, int width, int length, Color dcolor) {
 		int wbawah = width/4;
 		//badannya
 		Drawer::drawLine(dcolor, x-width, y, x+width, y);
