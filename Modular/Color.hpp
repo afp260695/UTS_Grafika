@@ -4,8 +4,39 @@
 class Color
 {
 	public:
+		/*static const Color WHITE;
+    	static const Color GRAY;
+    	static const Color YELLOW;
+    	static const Color BLACK;
+    	static const Color GREEN;
+    	static const Color RED;
+    	static const Color RED2;
+    	static const Color MAGENTA;
+    	static const Color MAGENTA2;
+    	static const Color DARKGRAY;*/
+    	static Color WHITE;
+    	static Color GRAY;
+    	static Color YELLOW;
+    	static Color BLACK;
+    	static Color GREEN;
+    	static Color RED;
+    	static Color RED2;
+    	static Color MAGENTA;
+    	static Color MAGENTA2;
+    	static Color DARKGRAY;
+		// inline Color(double _r, double _g, double _b):r(_r),g(_g),b(_b) {
+
+		// }
+
 		Color(double _r, double _g, double _b) {
-			setColor(_r, _g, _b);
+			r = _r;
+			g = _g;
+			b = _b;
+		}
+
+
+		Color() {
+			setColor(0, 0, 0);
 		}
 
 		bool operator== (const Color &c) {
@@ -24,32 +55,46 @@ class Color
 	    	b = _b;
 	    }
 
+	    double getR() {
+	    	return r;
+	    }
+
+	    double getG() {
+	    	return g;
+	    }
+
+	    double getB() {
+	    	return b;
+	    }
+
 	private:
 		double r;       // between 0 and 255
 	    double g;       // between 0 and 255
 	    double b;       // between 0 and 255
-	    static const Color WHITE;
-    	static const Color GRAY;
-    	static const Color YELLOW;
-    	static const Color BLACK;
-    	static const Color GREEN;
-    	static const Color RED;
-    	static const Color RED2;
-    	static const Color MAGENTA;
-    	static const Color MAGENTA2;
-    	static const Color DARKGRAY;
-	
+		
 };
 
-const Color Color::WHITE = new Color(255,255,255);
-const Color Color::GRAY = new Color(128, 128, 128);
-const Color Color::YELLOW = new Color(255, 255, 0);
-const Color Color::BLACK = new Color(0, 0, 0);
-const Color Color::GREEN = new Color(0, 255, 0);
-const Color Color::RED = new Color(255, 0, 0);
-const Color Color::RED2 = new Color(254, 0, 0);
-const Color Color::MAGENTA = new Color(255, 0, 255);
-const Color Color::MAGENTA2 = new Color(255, 0, 254);
-const Color Color::DARKGRAY = new Color(112, 128, 144);
-
 #endif
+
+Color Color::WHITE = new Color(255,255,255);
+Color Color::GRAY = new Color(128, 128, 128);
+Color Color::YELLOW = new Color(255, 255, 0);
+Color Color::BLACK = new Color(0, 0, 0);
+Color Color::GREEN = new Color(0, 255, 0);
+Color Color::RED = new Color(255, 0, 0);
+Color Color::RED2 = new Color(254, 0, 0);
+Color Color::MAGENTA = new Color(255, 0, 255);
+Color Color::MAGENTA2 = new Color(255, 0, 254);
+Color Color::DARKGRAY = new Color(112, 128, 144);
+
+	/*static const Color WHITE = Color(255,255,255);
+    	static const Color GRAY = Color(128, 128, 128);
+    	static const Color YELLOW = Color(255, 255, 0);
+    	static const Color BLACK = Color(0, 0, 0);
+    	static const Color GREEN = Color(0, 255, 0);
+    	static const Color RED = Color(255, 0, 0);
+    	static const Color RED2 = Color(254, 0, 0);
+    	static const Color MAGENTA = Color(255, 0, 255);
+    	static const Color MAGENTA2 = Color(255, 0, 254);
+    	static const Color DARKGRAY = Color(112, 128, 144);
+*/

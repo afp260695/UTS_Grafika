@@ -2,6 +2,16 @@
 #define PETA_HPP
 #include "Drawer.hpp"
 #include "Color.hpp"
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+using namespace std;
+
+typedef struct {
+    vector<int> points;
+} Building;
+
 class Peta
 {
 public:
@@ -67,8 +77,7 @@ public:
 	    Drawer::drawLine(Color::WHITE, x+size-1-(size-1)/2, y, x, y+size-1);
 	    Drawer::drawLine(Color::WHITE, x+(size-1)/2, y, x+size-1, y+size-1);
 	    Drawer::drawLine(Color::WHITE, x, y+size-1, x+size-1, y+size-1);
-	    floodFill(x+(size-1)/2, y+(size-1)/2, Color::WHITE, Color::GREEN);
-
+	    Drawer::floodFill(x+(size-1)/2, y+(size-1)/2, Color::WHITE, Color::GREEN);
 	}
 
 	static void drawAllPohon() {
@@ -105,8 +114,69 @@ public:
 		drawPohon(345,109,15);
 	}
 
+	void drawBangunan(vector<Building> &B) {
+	    double hue = 0;
+	    for (int i = 0; i < B.size() ; i++) {
+	        int j;
+	        int x_min = 99999999;
+	        int x_max = -1;
+	        int y_min = 99999999;
+	        int y_max = -1;
+	        int x_average = 0;
+	        int y_average = 0;
+	        for (j= 0; j < (B[i].points.size()-2); j += 2) {
+	            Drawer::drawLine(Color::WHITE, B[i].points[j], B[i].points[j+1], B[i].points[j+2], B[i].points[j+3]);
+	            x_min = min(x_min,min(B[i].points[j],B[i].points[j+2]));
+	            y_min = min(y_min,min(B[i].points[j+1],B[i].points[j+3]));
+	            x_max = max(x_max,max(B[i].points[j], B[i].points[j+2]));
+	            y_max = max(y_max, max(B[i].points[j+1], B[i].points[j+3]));
+	            
+	        }
 
-	
+	        x_average = (x_max+x_min) / 2;
+	        y_average = (y_max+y_min) / 2;
+	        hsv buildingColor = {hue, 0.7, 0.8};
+	        Drawer::floodFill(x_average, y_average, Color::WHITE, hsv2rgb(buildingColor));
+	        hue += 10;
+	        if (hue > 360) {
+	            hue = 0;
+	        }
+	        
+	    }    
+	}
+
+	void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
+	    myfile.open ("bangunan.txt");
+
+	    char c;
+	    char num[3]; int countchar = 0; int countline = 0;
+	    int temp;
+	    Building pointTemp;
+	    int i = 0;
+
+		while (!myfile.eof() ) {
+	        myfile.get(c);
+	        if (c == '*') {
+	            B.push_back(pointTemp);
+	            pointTemp.points.clear();
+	            myfile.get(c);
+	        } else if ((c == ',') || (c == '|')) {
+	        } else {
+	       
+	            num[countchar] = c;
+	            if (countchar < 2) {
+	                countchar++;
+	            } else {
+	                countchar = 0;
+	                temp = atoi(num);
+	                pointTemp.points.push_back(temp);
+	                i++;
+	            }
+	        }
+		}
+
+	    myfile.close();
+	}	
 };
 
 #endif

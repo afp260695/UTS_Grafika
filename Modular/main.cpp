@@ -14,14 +14,18 @@
 #include <thread>
 #include <pthread.h>
 #include <vector>
+#include "Color.hpp"
+#include "Peta.hpp"
+#include "Target.hpp"
+#include "Drawer.hpp"
+#include "Drone.hpp"
 
 using namespace std;
 
 #define WIDTH 1300
 #define HEIGHT 700
-#define lookSize 600
-#define jumlahTarget 6
-#define N_TARGET 6
+#define lookSize 350
+#define nTarget 6
 
 typedef struct {
     double h;       // angle in degrees
@@ -33,32 +37,23 @@ typedef struct {
 const int MAP_WIDTH = 442;
 const int MAP_HEIGHT = 520;
 
-static rgb hsv2rgb(hsv in);
+static Color hsv2Color(hsv in);
 
 struct fb_var_screeninfo vinfo;
 struct fb_fix_screeninfo finfo;
 char *fbp = 0;
 
 
-int posX;
-int posY;
-bool exploded = false;
+Target[] targets = new Target[nTarget];
+Drawer drawer = new Drawer();
+Drone drone = new Drone();
+Peta peta = new Peta();
 
-int mode = 0;
-//Array
-
-
-
-rgb clipperMatrix[lookSize-250][lookSize-250];
-
-rgb petafix[lookSize][lookSize];
 
 int x_god;
 int y_god;
 
 int size_god;
-
-
 
 unsigned char* BMP;
 int BMP_width, BMP_height;
@@ -70,15 +65,7 @@ typedef struct {
 bool pohon = true;
 bool jalan = true;
 bool bangunan = true;
-
-
-
-
-
-
-
-
-
+int screen_size;
 
 int detectKeyStroke() {
     //deteksi adanya keyboard yang ditekan.
@@ -103,8 +90,6 @@ int detectKeyStroke() {
     return NByte;
 }
 
-
-int screen_size;
 void DrawToScreen(){
     /* prosedure yang menggambar ke layar dari matriks RGB (harusnya rata tengah)*/
     long int location = 0;
@@ -131,15 +116,6 @@ void DrawToScreen(){
                 *((unsigned short int*)(fbp + location)) = t;
             }
         }
-}
-
-
-void fire() {
-    for (int i = 0; i < jumlahTarget; i++) {
-        if (targetColor[i] == clipperMatrix[(lookSize-250)/2][(lookSize-250)/2]) {
-            isTargetShot[i] = true;
-        }
-    }
 }
 
 void listenerKeyStroke(){
@@ -173,151 +149,19 @@ void listenerKeyStroke(){
     }
 }
 
-void drawClipPointer() {
-    int center = (lookSize-250)/2;
-    if (mode == 0) {
-        for(int i = 1; i < 10; i++) {
-            clipperMatrix[center + i][center] = rgb::WHITE;
-            clipperMatrix[center - i][center] = rgb::WHITE;
-            clipperMatrix[center][center + i] = rgb::WHITE;
-            clipperMatrix[center][center - i] = rgb::WHITE;
-        }
-    } else {
-        for(int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3-i; j++) {
-                if (!(i == 0 && j == 0)) {
-                    clipperMatrix[center + i][center+j] = rgb::WHITE;
-                    clipperMatrix[center + i][center-j] = rgb::WHITE;
-                    clipperMatrix[center - i][center+j] = rgb::WHITE;
-                    clipperMatrix[center - i][center-j] = rgb::WHITE;
-                }
-            }
+void fire() {
+    for (int i = 0; i < nTarget; i++) {
+        if (targets[i].targetColor == drawer.clipperMatrix[(lookSize)/2][(lookSize)/2]) {
+            targets[i].targetAlive = false;
         }
     }
 }
 
-void clipper(int y, int x, int size) {
-    int i, j;
-
-    drawLine(rgb::YELLOW, x-1,y-1,x+size,y-1);
-    drawLine(rgb::YELLOW, x+size,y-1,x+size,y+size);
-    drawLine(rgb::YELLOW, x+size,y+size,x-1,y+size);
-    drawLine(rgb::YELLOW, x-1,y+size,x-1,y-1);
-
-    clearClipperMatrix();
-
-    for (i=0;i<lookSize-250;i++) {
-        for (j=0;j<lookSize-250;j++) {
-            clipperMatrix[i][j] = pixelMatrix[x+(i*size/(lookSize-250))][y+(j*size/(lookSize-250))];
-        }
-    }
-
-    drawClipPointer();
-}
-
-
-void drawClips(int y, int x, int size) {
-    int i,j;
-    
-    drawLine(rgb::YELLOW, x-1,y-1,x+size,y-1);
-    drawLine(rgb::YELLOW, x+size,y-1,x+size,y+size);
-    drawLine(rgb::YELLOW, x+size,y+size,x-1,y+size);
-    drawLine(rgb::YELLOW, x-1,y+size,x-1,y-1);
-
-    for (i=0;i<size;i++) {
-        for (j=0;j<size;j++) {
-            pixelMatrix[x+i][y+j] = clipperMatrix[i][j];
-            
-        }
-    }
-
-}
-
-
-
-// x and y are center point
-void drawDrone (int x, int y, int width, int length, rgb dcolor) {
-	int wbawah = width/4;
-	//badannya
-	drawLine(dcolor, x-width, y, x+width, y);
-	drawLine(dcolor, x+width, y, x+width, y+(wbawah/2));
-	drawLine(dcolor, x+width, y+(wbawah/2), x+(width-10), y+(wbawah/2));
-	drawLine(dcolor, x+(width-10), y+(wbawah/2), x+wbawah, y+length);
-	drawLine(dcolor, x+wbawah, y+length, x-wbawah, y+length);
-	drawLine(dcolor, x-wbawah, y+length, x-(width-10), y+(wbawah/2));
-	drawLine(dcolor, x-(width-10), y+(wbawah/2), x-width, y+(wbawah/2));
-	drawLine(dcolor, x-width, y+(wbawah/2), x-width, y);
-	//tangan
-	drawLine(dcolor, x+width-5, y, x+width-5, y-10);
-	drawLine(dcolor, x-width, y-10, x-width+10, y-10);
-	drawLine(dcolor, x-width+5, y, x-width+5, y-10);
-	drawLine(dcolor, x+width, y-10, x+width-10, y-10);
-}
-
-int rotateX (int x, int y, int degree) {
-	float t = 3.14*degree/180;
-	float c = cos(t);
-	float s = sin(t);
-	int xt = 200;
-	int yt = 100;
-	x -= xt;
-	y -= yt;
-	float xtemp = x * c - y * s; 
-	return (xtemp + xt);
-}
-
-int rotateY (int x, int y, int degree) {
-	float t = 3.14*degree/180;
-	float c = cos(t);
-	float s = sin(t);
-	int xt = 200;
-	int yt = 100;
-	x -= xt;
-	y -= yt;
-	float ytemp = x * s + y * c; 
-	return (ytemp + yt);
-}
-
-void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
-    myfile.open ("bangunan2.txt");
-
-    char c;
-    char num[3]; int countchar = 0; int countline = 0;
-    int temp;
-    Building pointTemp;
-    int i = 0;
-
-	while (!myfile.eof() ) {
-        myfile.get(c);
-        if (c == '*') {
-            B.push_back(pointTemp);
-            pointTemp.points.clear();
-            myfile.get(c);
-        } else if ((c == ',') || (c == '|')) {
-        } else {
-             //cout << "$";
-            num[countchar] = c;
-            if (countchar < 2) {
-                countchar++;
-            } else {
-                countchar = 0;
-                temp = atoi(num);
-                pointTemp.points.push_back(temp);
-                i++;
-            }
-        }
-	}
-
-    myfile.close();
-}
-
-
-
-rgb hsv2rgb(hsv in)
+Color hsv2Color(hsv in)
 {
     double      hh, p, q, t, ff;
     long        i;
-    rgb         out;
+    Color         out;
 
     if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
         out.r = in.v;
@@ -375,252 +219,12 @@ rgb hsv2rgb(hsv in)
     return out;
 }
 
-bool drawLineOrang(rgb color, int x1, int y1, int x2, int y2) {
-    bool ret = false;
-
-    int deltaX = x2 - x1;
-    int deltaY = y2 - y1;
-    int ix = deltaX > 0 ? 1 : -1;
-    int iy = deltaY > 0 ? 1 : -1;
-    deltaX = abs(deltaX);
-    deltaY = abs(deltaY);
-
-    int x = x1;
-    int y = y1;
-
-    if(pixelMatrix[x][y] == rgb::BLACK)
-        drawPoint(color, x, y);
-
-    if (deltaX >= deltaY) {
-        int error = 2 * deltaY - deltaX;
-
-        while (x != x2) {
-            if ((error >= 0) && (error || (ix > 0)))
-            {
-                error -= deltaX;
-                y += iy;
-            }
-
-            error += deltaY;
-            x += ix;
-            if(pixelMatrix[x][y] == rgb::BLACK)
-                drawPoint(color, x, y);
-        }
-    } else {
-        int error = 2 * deltaX - deltaY;
-
-        while (y != y2)
-        {
-            if ((error >= 0) && (error || (iy > 0)))
-            {
-                error -= deltaY;
-                x += ix;
-            }
-
-            error += deltaX;
-            y += iy;
-            if(pixelMatrix[x][y] == rgb::BLACK)
-                drawPoint(color, x, y);
-        }
-    }
-    return ret;
-}
-
-void floodFillOrang(int x, int y, rgb batas, rgb warna){
-    if((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT)){
-        if(pixelMatrix[x][y] == rgb::BLACK){
-            pixelMatrix[x][y] = warna;
-            floodFillOrang(x,y+1, batas, warna);
-            floodFillOrang(x+1,y, batas, warna);
-            floodFillOrang(x,y-1, batas, warna);
-            floodFillOrang(x-1,y, batas, warna);
-        }
-    }
-}
-void drawCircle(int x0, int y0, int radius)
-{
-    int x = radius;
-    int y = 0;
-    int err = 0;
-
-    while (x >= y)
-    {
-        drawPoint(rgb::WHITE, x0 - x, y0 + y);
-        drawPoint(rgb::WHITE, x0 - y, y0 + x);
-        drawPoint(rgb::WHITE, x0 - y, y0 - x);
-        drawPoint(rgb::WHITE, x0 - x, y0 - y);
-        drawPoint(rgb::WHITE, x0 + x, y0 + y);
-        drawPoint(rgb::WHITE, x0 + y, y0 + x);
-        drawPoint(rgb::WHITE, x0 + y, y0 - x);
-        drawPoint(rgb::WHITE, x0 + x, y0 - y);
-
-        if (err <= 0)
-        {
-            y += 1;
-            err += 2*y + 1;
-        }
-        if (err > 0)
-        {
-            x -= 1;
-            err -= 2*x + 1;
-        }
-    }
-    floodFill(x0,y0,rgb::WHITE,rgb::GREEN);
-}
-
-void drawKepala(int x, int y, int scaling, rgb warna, rgb batas){
-    drawLineOrang(batas, x, y, x+2*scaling, y);
-    drawLineOrang(batas, x+2*scaling, y, x+2*scaling, y+2*scaling);
-    drawLineOrang(batas, x, y, x, y+2*scaling);
-    drawLineOrang(batas, x, y+2*scaling, x+2*scaling, y+2*scaling);
-    floodFillOrang(x+1, y+1, batas, warna);
-}
-
-void drawBadan(int x, int y, int scaling, rgb warna, rgb batas){
-    drawLineOrang(batas, x-2*scaling, y+2*scaling, x+4*scaling, y+2*scaling);
-    drawLineOrang(batas, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling); 
-    drawLineOrang(batas, x-2*scaling, y+2*scaling, x-2*scaling, y+6*scaling);
-    // drawCircle(x+4*scaling, y+6*scaling, 2);
-    drawLineOrang(batas, x-2*scaling, y+6*scaling, x, y+6*scaling);
-    drawLineOrang(batas, x, y+6*scaling, x, y+4*scaling);
-    drawLineOrang(batas, x, y+6*scaling, x, y+8*scaling);
-    drawLineOrang(batas, x, y+8*scaling, x+2*scaling, y+8*scaling);
-    drawLineOrang(batas, x+2*scaling, y+8*scaling, x+2*scaling, y+4*scaling);
-
-    drawLineOrang(batas, x+4*scaling, y+2*scaling, x+4*scaling, y+6*scaling);
-    drawLineOrang(batas, x+4*scaling, y+6*scaling, x+2*scaling, y+6*scaling);
-    floodFillOrang((x-2*scaling) + 1, (y+2*scaling) + 1, batas, warna);
-    floodFillOrang((x-2*scaling) + 1, (y+6*scaling) - 1, batas,warna);
-    floodFillOrang((x) + 1, (y+8*scaling) - 1, batas, warna);
-    floodFillOrang((x+2*scaling) - 1, (y+8*scaling) - 1, batas, warna);
-    floodFillOrang((x+4*scaling) - 1, (y+2*scaling) + 1, batas, warna);
-    floodFillOrang((x+4*scaling) - 1, (y+6*scaling) - 1, batas, warna);
-    floodFillOrang(x+1, y+3*scaling, batas, warna);
-    floodFillOrang(x+1, y+5*scaling, batas, warna);
-}
-
-void drawTarget(int x, int y, int scaling, rgb warna, rgb batas){
-    drawKepala(x,y,scaling,warna,batas);
-
-    //badan
-    drawBadan(x,y,scaling,warna,batas);
-}
-
-
-void destroyTarget(int x, int y, int scaling, rgb warna,rgb batas){
-    int kecx = -1;
-    int kecy = 1;
-    bool stop = false;
-    while(!stop){
-        kecy = 0;
-        while (y < y+8*scaling){
-            x += kecx;
-            y += kecy;
-            kecy++;
-        }
-        if (kecy < 2) {
-            stop = true;
-        }
-        while (kecy > 0) {
-            x += kecx;
-            y -= kecy;
-            kecy -= 2;
-        }
-        drawKepala(x,y,scaling,warna,batas);
-        sleep(1000);
-    }
-}
-
-
-
-void drawBangunan(vector<Building> &B) {
-    double hue = 0;
-    // for (int i = 0; i < B.size()-10 ; i++) {
-    // cout << B.size()<<endl;
-    for (int i = 0; i < B.size() ; i++) {
-        // int i = 0;
-        int j;
-        int x_min = 99999999;
-        int x_max = -1;
-        int y_min = 99999999;
-        int y_max = -1;
-        int x_average = 0;
-        int y_average = 0;
-        for (j= 0; j < (B[i].points.size()-2); j += 2) {
-            drawLine(rgb::WHITE, B[i].points[j], B[i].points[j+1], B[i].points[j+2], B[i].points[j+3]);
-            x_min = min(x_min,min(B[i].points[j],B[i].points[j+2]));
-            y_min = min(y_min,min(B[i].points[j+1],B[i].points[j+3]));
-            x_max = max(x_max,max(B[i].points[j], B[i].points[j+2]));
-            y_max = max(y_max, max(B[i].points[j+1], B[i].points[j+3]));
-            
-        }
-        // drawCircle(x_max, y_max, 5);
-        // drawCircle(B[i].points[j+1], B[i].points[j+3], 5);
-        x_average = (x_max+x_min) / 2;
-        y_average = (y_max+y_min) / 2;
-        // cout <<  B[i].points.size() <<endl;
-        // cout << "x_average" << x_average << endl;
-        // cout << "y_average" << y_average << endl;
-        // drawCircle(x_average, y_average, 5);
-        hsv buildingColor = {hue, 0.7, 0.8};
-        // x_average = x_average / B[i].points.size();
-        // y_average = y_average / B[i].points.size();
-        floodFill(x_average, y_average, rgb::WHITE, hsv2rgb(buildingColor));
-        hue += 10;
-        if (hue > 360) {
-            hue = 0;
-        }
-        
-    }
-
-    
-    
-}
-
-void behaviourOrang(int i, int scaling, int speed, int range){
-    if(!isTargetShot[i]){
-        drawTarget(arrtargetx[i],arrtargety[i],scaling,targetColor[i], rgb::MAGENTA2);
-
-        arrtargetx[i] = arrtargetx[i] + speed*arrtargetdir[i];
-        arrtargetujung[i] += arrtargetdir[i];
-        if (arrtargetujung[i] >= range){
-            arrtargetdir[i] = -1;
-        }
-        if (arrtargetujung[i] <= 0) {
-            arrtargetdir[i] = 1;
-        }
-        arrkepalay[i] = arrtargety[i];
-        arrkepalax[i] = arrtargetx[i];
-    } else {
-        //kecy = 0;
-        
-        //if (!arrstop[i]) {
-            if (arrkepalay[i] < arrkepalay[i]+(8*scaling)){
-                arrkepalax[i] += arrkecx[i];
-                arrkepalay[i] += arrkecy[i];
-                arrkecy[i]++;
-            }
-            if (arrkecy[i] < 2) {
-                arrstop[i] = true;
-            }
-            if (arrkecy[i] > 0) {
-                arrkepalax[i] += arrkecx[i];
-                arrkepalay[i] -= arrkecy[i];
-                arrkecy[i] -= 2;
-            }
-            drawKepala(arrkepalax[i],arrkepalay[i],scaling,targetColor[i], rgb::MAGENTA2);
-            
-        //}
-    }
-}
-
 int main(int argc, char const *argv[]) {
     clearMatrix();
 	
     int fbfd = 0;
     long int screensize = 0;
-    bool exploded = false;
-
+    
     x_god = 0;
     y_god = 0;
     size_god = 420;
@@ -654,103 +258,94 @@ int main(int argc, char const *argv[]) {
     //Gambar trapesium
     thread thread1(listenerKeyStroke);
 
-    int xp = 600;
-    int yp = 574;
     char KeyPressed;
-
-    int xawal = 100, yawal = 150;
-    bool left = true;
-    
     
 	int length = 50;
 	int width = 20;
 	int x = 200;
 	int y = 200;
-	int i = 0;	
-	int posx = 100;
-	int posy = 100;
 	int direction = 0;
 	int scaling = 2;
 	
-
-	for(int i = 0;i < jumlahTarget;i++) {
-		arrkecy[i] = 0;
-		arrkecx[i] = 1;
+	for(int i = 0;i < nTarget;i++) {
+        targets[i] = new Target();
+		targets[i].kecY = 0;
+		targets[i].kecX = 1;
         //posisi target
         if (i == 0){
-            arrtargetx[i] = 25;
-            arrtargety[i] = 40;
+            targets[i].targetX = 25;
+            targets[i].targetY = 40;
         }
         else if (i == 1){
-            arrtargetx[i] = 100;
-            arrtargety[i] = 115;
+            targets[i].targetX = 100;
+            targets[i].targetY = 115;
         }
         else if (i == 2){
-            arrtargetx[i] = 150;
-            arrtargety[i] = 175;
+            targets[i].targetX = 150;
+            targets[i].targetY = 175;
         }
         else if (i == 3){
-            arrtargetx[i] = 235;
-            arrtargety[i] = 235;
+            targets[i].targetX = 235;
+            targets[i].targetY = 235;
         }
         else if (i == 4){
-            arrtargetx[i] = 175;
-            arrtargety[i] = 300;
+            targets[i].targetX = 175;
+            targets[i].targetY = 300;
         }
         else{
-            arrtargetx[i] = 310;
-            arrtargety[i] = 375;
+            targets[i].targetX = 310;
+            targets[i].targetY = 375;
         }
-        rgb temp;
+        Color temp = new Color();
         temp.r = 254-i;
         temp.g = 0;
         temp.b = 0;
-        targetColor[i] = temp;
+        targets[i].targetColor = temp;
 		
-		arrtargetdir[i] = 0;
-		arrstop[i] = false;
-		arrtargetalive[i] = true;
-		arrtargetujung[i] = 0;
+		targets[i].targetDir = 0;
+		targets[i].stop = false;
+		targets[i].targetAlive = true;
+		targets[i].targetUjung = 0;
 	}
     ifstream myfile;
-    vector<Building> B;
+    peta.vector<Building> B;
 
-    readBangunanFromFile(myfile, B);
+    peta.readBangunanFromFile(myfile, B);
     do {
         clearMatrix();
-        drawFrame();
-        drawLine(rgb::WHITE, 0, 0, 442, 0);
-        drawLine(rgb::WHITE, 0, 0, 0, 520);
-        drawLine(rgb::WHITE, 0, 520, 442, 520);
-        drawLine(rgb::WHITE, 442, 0, 442, 520);
+        drawer.drawFrame();
+        drawer.drawLine(Color::WHITE, 0, 0, 442, 0);
+        drawer.drawLine(Color::WHITE, 0, 0, 0, 520);
+        drawer.drawLine(Color::WHITE, 0, 520, 442, 520);
+        drawer.drawLine(Color::WHITE, 442, 0, 442, 520);
         
 		if (bangunan) {
-            drawBangunan(B);
+            peta.drawBangunan(B);
         }
 		
 		// draw Pohon
         if (pohon)
-            drawAllPohon();
+            peta.drawAllPohon();
 		
         // perilaku target
-		for(int i = 0;i < jumlahTarget;i++) {
+		for(int i = 0;i < nTarget;i++) {
             if (i == 0){
-                behaviourOrang(i, scaling, 5, 75);
+                targets[i].behaviourOrang(scaling, 5, 75);
             }
             else if (i == 1){
-                behaviourOrang(i, scaling, 2, 55);
+                targets[i].behaviourOrang(scaling, 2, 55);
             }
             else if (i == 2){
-                behaviourOrang(i, scaling, 1, 100);
+                targets[i].behaviourOrang(scaling, 1, 100);
             }
             else if (i == 3){
-                behaviourOrang(i, scaling, 4, 40);
+                targets[i].behaviourOrang(scaling, 4, 40);
             }
             else if (i == 4){
-                behaviourOrang(i, scaling, 3, 30);
+                targets[i].behaviourOrang(scaling, 3, 30);
             }
             else{
-                behaviourOrang(i, scaling, 2, 50);
+                targets[i].behaviourOrang(scaling, 2, 50);
             }
 			
 		}
@@ -759,18 +354,18 @@ int main(int argc, char const *argv[]) {
         
         //draw jalan
         if (jalan)
-            DrawJalan(0,0);
+            peta.DrawJalan(0,0);
             
 		
-		drawCircle(100,445,20);
+		drawer.drawCircle(100,445,20);
         
-        clipper(x_god,y_god,size_god);
-        drawClips(100,700,lookSize-250);
+        drawer.clipper(x_god,y_god,size_god);
+        drawer.drawClips(100,700,lookSize);
 		//draw drone		
 		int x_ = rotateX (x, y, 1);
 		int y_ = rotateY (x, y, 1);
-		drawDrone (x_, y_, length, width, rgb::MAGENTA);
-		floodFill(x_, y_+10, rgb::MAGENTA, rgb::DARKGRAY);
+		drone.drawDrone (x_, y_, length, width, Color::MAGENTA);
+		drawer.floodFill(x_, y_+10, Color::MAGENTA, Color::DARKGRAY);
 		x = x_; y = y_;
         DrawToScreen();
     } while (KeyPressed!='C');
