@@ -10,10 +10,21 @@
 #define HEIGHT_REAL 600
 #define lookSize 350
 
+Color* WHITE = new Color(255,255,255);
+Color* GRAY = new Color(128, 128, 128);
+Color* YELLOW = new Color(255, 255, 0);
+Color* BLACK = new Color(0, 0, 0);
+Color* GREEN = new Color(0, 255, 0);
+Color* RED = new Color(255, 0, 0);
+Color* RED2 = new Color(254, 0, 0);
+Color* MAGENTA = new Color(255, 0, 255);
+Color* MAGENTA2 = new Color(255, 0, 254);
+Color* DARKGRAY = new Color(112, 128, 144);
+
 class Drawer
 {
 public:
-	static int mode;
+	Drawer() {mode = 0;}
 	static void clearMatrix() {
 	    for (int i = 0; i < WIDTH; ++i)
 	        for (int j = 0; j < HEIGHT; ++j)
@@ -27,10 +38,10 @@ public:
 	}
 
 	static void drawFrame() {
-	    drawLine(Color::WHITE, 0, 0, WIDTH_REAL, 0);
-	    drawLine(Color::WHITE, WIDTH_REAL, 0, WIDTH_REAL, HEIGHT_REAL);
-	    drawLine(Color::WHITE, WIDTH_REAL, HEIGHT_REAL, 0, HEIGHT_REAL);
-	    drawLine(Color::WHITE, 0, HEIGHT_REAL, 0, 0);
+	    drawLine(*WHITE, 0, 0, WIDTH_REAL, 0);
+	    drawLine(*WHITE, WIDTH_REAL, 0, WIDTH_REAL, HEIGHT_REAL);
+	    drawLine(*WHITE, WIDTH_REAL, HEIGHT_REAL, 0, HEIGHT_REAL);
+	    drawLine(*WHITE, 0, HEIGHT_REAL, 0, 0);
 	}
 
 	static bool drawLine(Color color, int x1, int y1, int x2, int y2) {
@@ -106,22 +117,22 @@ public:
 	}
 
 	static void drawClipPointer() {
-	    int center = (lookSize-250)/2;
+	    int center = (lookSize)/2;
 	    if (mode == 0) {
 	        for(int i = 1; i < 10; i++) {
-	            clipperMatrix[center + i][center] = Color::WHITE;
-	            clipperMatrix[center - i][center] = Color::WHITE;
-	            clipperMatrix[center][center + i] = Color::WHITE;
-	            clipperMatrix[center][center - i] = Color::WHITE;
+	            clipperMatrix[center + i][center] = *WHITE;
+	            clipperMatrix[center - i][center] = *WHITE;
+	            clipperMatrix[center][center + i] = *WHITE;
+	            clipperMatrix[center][center - i] = *WHITE;
 	        }
 	    } else {
 	        for(int i = 0; i < 3; i++) {
 	            for (int j = 0; j < 3-i; j++) {
 	                if (!(i == 0 && j == 0)) {
-	                    clipperMatrix[center + i][center+j] = Color::WHITE;
-	                    clipperMatrix[center + i][center-j] = Color::WHITE;
-	                    clipperMatrix[center - i][center+j] = Color::WHITE;
-	                    clipperMatrix[center - i][center-j] = Color::WHITE;
+	                    clipperMatrix[center + i][center+j] = *WHITE;
+	                    clipperMatrix[center + i][center-j] = *WHITE;
+	                    clipperMatrix[center - i][center+j] = *WHITE;
+	                    clipperMatrix[center - i][center-j] = *WHITE;
 	                }
 	            }
 	        }
@@ -131,16 +142,16 @@ public:
 	static void clipper(int y, int x, int size) {
 	    int i, j;
 
-	    drawLine(Color::YELLOW, x-1,y-1,x+size,y-1);
-	    drawLine(Color::YELLOW, x+size,y-1,x+size,y+size);
-	    drawLine(Color::YELLOW, x+size,y+size,x-1,y+size);
-	    drawLine(Color::YELLOW, x-1,y+size,x-1,y-1);
+	    drawLine(*YELLOW, x-1,y-1,x+size,y-1);
+	    drawLine(*YELLOW, x+size,y-1,x+size,y+size);
+	    drawLine(*YELLOW, x+size,y+size,x-1,y+size);
+	    drawLine(*YELLOW, x-1,y+size,x-1,y-1);
 
 	    clearClipperMatrix();
 
-	    for (i=0;i<lookSize-250;i++) {
-	        for (j=0;j<lookSize-250;j++) {
-	            clipperMatrix[i][j] = pixelMatrix[x+(i*size/(lookSize-250))][y+(j*size/(lookSize-250))];
+	    for (i=0;i<lookSize;i++) {
+	        for (j=0;j<lookSize;j++) {
+	            clipperMatrix[i][j] = pixelMatrix[x+(i*size/(lookSize))][y+(j*size/(lookSize))];
 	        }
 	    }
 
@@ -151,10 +162,10 @@ public:
 	static void drawClips(int y, int x, int size) {
 	    int i,j;
 	    
-	    drawLine(Color::YELLOW, x-1,y-1,x+size,y-1);
-	    drawLine(Color::YELLOW, x+size,y-1,x+size,y+size);
-	    drawLine(Color::YELLOW, x+size,y+size,x-1,y+size);
-	    drawLine(Color::YELLOW, x-1,y+size,x-1,y-1);
+	    drawLine(*YELLOW, x-1,y-1,x+size,y-1);
+	    drawLine(*YELLOW, x+size,y-1,x+size,y+size);
+	    drawLine(*YELLOW, x+size,y+size,x-1,y+size);
+	    drawLine(*YELLOW, x-1,y+size,x-1,y-1);
 
 	    for (i=0;i<size;i++) {
 	        for (j=0;j<size;j++) {
@@ -172,14 +183,14 @@ public:
 
 	    while (x >= y)
 	    {
-	        drawPoint(Color::WHITE, x0 - x, y0 + y);
-	        drawPoint(Color::WHITE, x0 - y, y0 + x);
-	        drawPoint(Color::WHITE, x0 - y, y0 - x);
-	        drawPoint(Color::WHITE, x0 - x, y0 - y);
-	        drawPoint(Color::WHITE, x0 + x, y0 + y);
-	        drawPoint(Color::WHITE, x0 + y, y0 + x);
-	        drawPoint(Color::WHITE, x0 + y, y0 - x);
-	        drawPoint(Color::WHITE, x0 + x, y0 - y);
+	        drawPoint(*WHITE, x0 - x, y0 + y);
+	        drawPoint(*WHITE, x0 - y, y0 + x);
+	        drawPoint(*WHITE, x0 - y, y0 - x);
+	        drawPoint(*WHITE, x0 - x, y0 - y);
+	        drawPoint(*WHITE, x0 + x, y0 + y);
+	        drawPoint(*WHITE, x0 + y, y0 + x);
+	        drawPoint(*WHITE, x0 + y, y0 - x);
+	        drawPoint(*WHITE, x0 + x, y0 - y);
 
 	        if (err <= 0)
 	        {
@@ -192,10 +203,10 @@ public:
 	            err -= 2*x + 1;
 	        }
 	    }
-	    floodFill(x0,y0,Color::WHITE,Color::GREEN);
+	    floodFill(x0,y0,*WHITE,*GREEN);
 	}
 
-	int rotateX (int x, int y, int degree) {
+	static int rotateX (int x, int y, int degree) {
 		float t = 3.14*degree/180;
 		float c = cos(t);
 		float s = sin(t);
@@ -207,7 +218,7 @@ public:
 		return (xtemp + xt);
 	}
 
-	int rotateY (int x, int y, int degree) {
+	static int rotateY (int x, int y, int degree) {
 		float t = 3.14*degree/180;
 		float c = cos(t);
 		float s = sin(t);
@@ -219,18 +230,26 @@ public:
 		return (ytemp + yt);
 	}
 
-	Color getPixelMatrix(int x, int y) {
+	static Color getPixelMatrix(int x, int y) {
 		return pixelMatrix[x][y];
 	}
 
-	Color getClipperMatrix(int x, int y) {
+	static Color getClipperMatrix(int x, int y) {
 		return clipperMatrix[x][y];
 	}
 
-private:
+	static void inverseMode() {
+		mode = (!mode);
+	}
+
+	static int getMode() {
+		return mode;
+	}
+
 	static Color pixelMatrix[WIDTH][HEIGHT];
 	static Color clipperMatrix[lookSize][lookSize];
-	
+	static int mode;
+  private:	
 };
 
 Color Drawer::pixelMatrix[WIDTH][HEIGHT];

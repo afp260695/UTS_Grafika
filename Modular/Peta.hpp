@@ -12,12 +12,81 @@ typedef struct {
     vector<int> points;
 } Building;
 
+typedef struct {
+    double h;       // angle in degrees
+    double s;       // a fraction between 0 and 1
+    double v;       // a fraction between 0 and 1
+} hsv;
+
 class Peta
 {
 public:
+
+	static Color hsv2Color(hsv in)
+	{
+	    double      hh, p, q, t, ff;
+	    long        i;
+	    Color         out;
+
+	    if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
+	        out.r = in.v;
+	        out.g = in.v;
+	        out.b = in.v;
+	        return out;
+	    }
+
+	    hh = in.h;
+	    if(hh >= 360.0) hh = 0.0;
+	    hh /= 60.0;
+	    i = (long)hh;
+	    ff = hh - i;
+	    p = in.v * (1.0 - in.s);
+	    q = in.v * (1.0 - (in.s * ff));
+	    t = in.v * (1.0 - (in.s * (1.0 - ff)));
+
+	    switch(i) {
+	    case 0:
+	        out.r = in.v;
+	        out.g = t;
+	        out.b = p;
+	        break;
+	    case 1:
+	        out.r = q;
+	        out.g = in.v;
+	        out.b = p;
+	        break;
+	    case 2:
+	        out.r = p;
+	        out.g = in.v;
+	        out.b = t;
+	        break;
+
+	    case 3:
+	        out.r = p;
+	        out.g = q;
+	        out.b = in.v;
+	        break;
+	    case 4:
+	        out.r = t;
+	        out.g = p;
+	        out.b = in.v;
+	        break;
+	    case 5:
+	    default:
+	        out.r = in.v;
+	        out.g = p;
+	        out.b = q;
+	        break;
+	    }
+	    out.r *= 255;
+	    out.g *= 255;
+	    out.b *= 255;
+	    return out;
+	}
+
 	static void DrawJalan(int x, int y) {
 
-	    Color roadColor = Color::GRAY;
+	    Color roadColor = *GRAY;
 		Drawer::drawLine(roadColor,58,505,54,518);Drawer::drawLine(roadColor,55,505,51,518);
 		Drawer::drawLine(roadColor,58,505,11,350);Drawer::drawLine(roadColor,54,505,9,350);
 		Drawer::drawLine(roadColor,56,509,189,471);Drawer::drawLine(roadColor,56,504,189,466);
@@ -74,10 +143,10 @@ public:
 	}
 
 	static void drawPohon(int x, int y, int size) {
-	    Drawer::drawLine(Color::WHITE, x+size-1-(size-1)/2, y, x, y+size-1);
-	    Drawer::drawLine(Color::WHITE, x+(size-1)/2, y, x+size-1, y+size-1);
-	    Drawer::drawLine(Color::WHITE, x, y+size-1, x+size-1, y+size-1);
-	    Drawer::floodFill(x+(size-1)/2, y+(size-1)/2, Color::WHITE, Color::GREEN);
+	    Drawer::drawLine(*WHITE, x+size-1-(size-1)/2, y, x, y+size-1);
+	    Drawer::drawLine(*WHITE, x+(size-1)/2, y, x+size-1, y+size-1);
+	    Drawer::drawLine(*WHITE, x, y+size-1, x+size-1, y+size-1);
+	    Drawer::floodFill(x+(size-1)/2, y+(size-1)/2, *WHITE, *GREEN);
 	}
 
 	static void drawAllPohon() {
@@ -114,7 +183,7 @@ public:
 		drawPohon(345,109,15);
 	}
 
-	void drawBangunan(vector<Building> &B) {
+	static void drawBangunan(vector<Building> &B) {
 	    double hue = 0;
 	    for (int i = 0; i < B.size() ; i++) {
 	        int j;
@@ -125,7 +194,7 @@ public:
 	        int x_average = 0;
 	        int y_average = 0;
 	        for (j= 0; j < (B[i].points.size()-2); j += 2) {
-	            Drawer::drawLine(Color::WHITE, B[i].points[j], B[i].points[j+1], B[i].points[j+2], B[i].points[j+3]);
+	            Drawer::drawLine(*WHITE, B[i].points[j], B[i].points[j+1], B[i].points[j+2], B[i].points[j+3]);
 	            x_min = min(x_min,min(B[i].points[j],B[i].points[j+2]));
 	            y_min = min(y_min,min(B[i].points[j+1],B[i].points[j+3]));
 	            x_max = max(x_max,max(B[i].points[j], B[i].points[j+2]));
@@ -136,7 +205,7 @@ public:
 	        x_average = (x_max+x_min) / 2;
 	        y_average = (y_max+y_min) / 2;
 	        hsv buildingColor = {hue, 0.7, 0.8};
-	        Drawer::floodFill(x_average, y_average, Color::WHITE, hsv2rgb(buildingColor));
+	        Drawer::floodFill(x_average, y_average, *WHITE, hsv2Color(buildingColor));
 	        hue += 10;
 	        if (hue > 360) {
 	            hue = 0;
@@ -145,7 +214,7 @@ public:
 	    }    
 	}
 
-	void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
+	static void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
 	    myfile.open ("bangunan.txt");
 
 	    char c;

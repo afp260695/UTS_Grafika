@@ -6,11 +6,12 @@
 #define HEIGHT 700
 #define WIDTH_REAL 1200
 #define HEIGHT_REAL 600	
+
 class Target
 {
 public:
-	Target();
-	~Target();
+
+	
 	void drawKepala(int x, int y, int scaling, Color warna, Color batas){
 	    drawLineOrang(batas, x, y, x+2*scaling, y);
 	    drawLineOrang(batas, x+2*scaling, y, x+2*scaling, y+2*scaling);
@@ -48,8 +49,8 @@ public:
 	}
 
 	void behaviourOrang(int scaling, int speed, int range){
-	    if(!targetAlive){
-	        drawTarget(targetX,targetY,scaling,targetColor, Color::MAGENTA2);
+	    if(targetAlive){
+	        drawTarget(targetX,targetY,scaling,targetColor, *MAGENTA2);
 
 	        targetX = targetX + speed*targetDir;
 	        targetUjung += targetDir;
@@ -91,7 +92,7 @@ public:
 	                }
 	            }
 	        }
-	        drawKepala(kepalaX,kepalaY,scaling,targetColor, Color::MAGENTA2);
+	        drawKepala(kepalaX,kepalaY,scaling,targetColor, *MAGENTA2);
 	    }
 	}
 
@@ -108,7 +109,7 @@ public:
 	    int x = x1;
 	    int y = y1;
 
-	    if(pixelMatrix[x][y] == Color::BLACK)
+	    if(Drawer::pixelMatrix[x][y] == *BLACK)
 	        Drawer::drawPoint(color, x, y);
 
 	    if (deltaX >= deltaY) {
@@ -123,7 +124,7 @@ public:
 
 	            error += deltaY;
 	            x += ix;
-	            if(pixelMatrix[x][y] == Color::BLACK)
+	            if(Drawer::pixelMatrix[x][y] == *BLACK)
 	                Drawer::drawPoint(color, x, y);
 	        }
 	    } else {
@@ -139,7 +140,7 @@ public:
 
 	            error += deltaX;
 	            y += iy;
-	            if(pixelMatrix[x][y] == Color::BLACK)
+	            if(Drawer::pixelMatrix[x][y] == *BLACK)
 	                Drawer::drawPoint(color, x, y);
 	        }
 	    }
@@ -148,8 +149,8 @@ public:
 
 	void floodFillOrang(int x, int y, Color batas, Color warna){
 	    if((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT)){
-	        if(pixelMatrix[x][y] == Color::BLACK){
-	            pixelMatrix[x][y] = warna;
+	        if(Drawer::pixelMatrix[x][y] == *BLACK){
+	            Drawer::pixelMatrix[x][y] = warna;
 	            floodFillOrang(x,y+1, batas, warna);
 	            floodFillOrang(x+1,y, batas, warna);
 	            floodFillOrang(x,y-1, batas, warna);
@@ -159,7 +160,7 @@ public:
 	}
 
 
-private:
+
 	Color targetColor;
 	
 	int kepalaX;
