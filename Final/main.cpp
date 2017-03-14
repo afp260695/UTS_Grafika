@@ -948,37 +948,37 @@ void *drawDroneThread(void *args){
 
 void behaviourOrang(int i, int scaling, int speed, int range){
     if(arrtargetalive[i]){
-                    drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED2, rgb::MAGENTA2);
+        drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED2, rgb::MAGENTA2);
 
-                    arrtargetx[i] = arrtargetx[i] + speed*arrtargetdir[i];
-                    arrtargetujung[i] += arrtargetdir[i];
-                    if (arrtargetujung[i] >= range){
-                        arrtargetdir[i] = -1;
-                    }
-                    if (arrtargetujung[i] <= 0) {
-                        arrtargetdir[i] = 1;
-                    }
-                } else {
-                    //kecy = 0;
-                    
-                    if (!arrstop[i]) {
-                        if (arrkepalay[i] < arrkepalay[i]+8*scaling){
-                            arrkepalax[i] += arrkecx[i];
-                            arrkepalay[i] += arrkecy[i];
-                            arrkecy[i]++;
-                        }
-                        if (arrkecy[i] < 2) {
-                            arrstop[i] = true;
-                        }
-                        if (arrkecy[i] > 0) {
-                            arrkepalax[i] += arrkecx[i];
-                            arrkepalay[i] -= arrkecy[i];
-                            arrkecy[i] -= 2;
-                        }
-                        drawKepala(arrkepalax[i],arrkepalay[i],scaling,rgb::RED, rgb::WHITE);
-                        sleep(5);
-                    }
-                }
+        arrtargetx[i] = arrtargetx[i] + speed*arrtargetdir[i];
+        arrtargetujung[i] += arrtargetdir[i];
+        if (arrtargetujung[i] >= range){
+            arrtargetdir[i] = -1;
+        }
+        if (arrtargetujung[i] <= 0) {
+            arrtargetdir[i] = 1;
+        }
+    } else {
+        //kecy = 0;
+        
+        if (!arrstop[i]) {
+            if (arrkepalay[i] < arrkepalay[i]+8*scaling){
+                arrkepalax[i] += arrkecx[i];
+                arrkepalay[i] += arrkecy[i];
+                arrkecy[i]++;
+            }
+            if (arrkecy[i] < 2) {
+                arrstop[i] = true;
+            }
+            if (arrkecy[i] > 0) {
+                arrkepalax[i] += arrkecx[i];
+                arrkepalay[i] -= arrkecy[i];
+                arrkecy[i] -= 2;
+            }
+            drawKepala(arrkepalax[i],arrkepalay[i],scaling,rgb::RED, rgb::WHITE);
+            sleep(5);
+        }
+    }
 }
 
 int main(int argc, char const *argv[]) {
