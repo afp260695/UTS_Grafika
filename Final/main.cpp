@@ -406,8 +406,8 @@ void drawFrame() {
 }
 
 void fire() {
-    for (int i = 0; i < N_TARGET; i++) {
-        if (targetColor[i] == clipperMatrix[lookSize/2][lookSize/2]) {
+    for (int i = 0; i < jumlahTarget; i++) {
+        if (targetColor[i] == clipperMatrix[(lookSize-250)/2][(lookSize-250)/2]) {
             isTargetShot[i] = true;
         }
     }
@@ -438,7 +438,7 @@ void drawKeyClip(){
             bangunan = !bangunan;
         } else if ((KeyPressed=='M') ||(KeyPressed=='m')) {
             mode = !mode;
-        } else if ((KeyPressed==' ')) {
+        } else if (KeyPressed==' ') {
             fire();
         }
     }
@@ -447,7 +447,7 @@ void drawKeyClip(){
 void drawClipPointer() {
     int center = (lookSize-250)/2;
     if (mode == 0) {
-        for(int i = 0; i < 10; i++) {
+        for(int i = 1; i < 10; i++) {
             clipperMatrix[center + i][center] = rgb::WHITE;
             clipperMatrix[center - i][center] = rgb::WHITE;
             clipperMatrix[center][center + i] = rgb::WHITE;
@@ -456,10 +456,12 @@ void drawClipPointer() {
     } else {
         for(int i = 0; i < 3; i++) {
             for (int j = 0; j < 3-i; j++) {
-                clipperMatrix[center + i][center+j] = rgb::WHITE;
-                clipperMatrix[center + i][center-j] = rgb::WHITE;
-                clipperMatrix[center - i][center+j] = rgb::WHITE;
-                clipperMatrix[center - i][center-j] = rgb::WHITE;
+                if (!(i == 0 && j == 0)) {
+                    clipperMatrix[center + i][center+j] = rgb::WHITE;
+                    clipperMatrix[center + i][center-j] = rgb::WHITE;
+                    clipperMatrix[center - i][center+j] = rgb::WHITE;
+                    clipperMatrix[center - i][center-j] = rgb::WHITE;
+                }
             }
         }
     }
@@ -947,8 +949,8 @@ void *drawDroneThread(void *args){
 }
 
 void behaviourOrang(int i, int scaling, int speed, int range){
-    if(arrtargetalive[i]){
-        drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED2, rgb::MAGENTA2);
+    if(!isTargetShot[i]){
+        drawTarget(arrtargetx[i],arrtargety[i],scaling,targetColor[i], rgb::MAGENTA2);
 
         arrtargetx[i] = arrtargetx[i] + speed*arrtargetdir[i];
         arrtargetujung[i] += arrtargetdir[i];
@@ -958,11 +960,13 @@ void behaviourOrang(int i, int scaling, int speed, int range){
         if (arrtargetujung[i] <= 0) {
             arrtargetdir[i] = 1;
         }
+        arrkepalay[i] = arrtargety[i];
+        arrkepalax[i] = arrtargetx[i];
     } else {
         //kecy = 0;
         
-        if (!arrstop[i]) {
-            if (arrkepalay[i] < arrkepalay[i]+8*scaling){
+        //if (!arrstop[i]) {
+            if (arrkepalay[i] < arrkepalay[i]+(8*scaling)){
                 arrkepalax[i] += arrkecx[i];
                 arrkepalay[i] += arrkecy[i];
                 arrkecy[i]++;
@@ -975,9 +979,9 @@ void behaviourOrang(int i, int scaling, int speed, int range){
                 arrkepalay[i] -= arrkecy[i];
                 arrkecy[i] -= 2;
             }
-            drawKepala(arrkepalax[i],arrkepalay[i],scaling,rgb::RED, rgb::WHITE);
-            sleep(5);
-        }
+            drawKepala(arrkepalax[i],arrkepalay[i],scaling,targetColor[i], rgb::MAGENTA2);
+            
+        //}
     }
 }
 
@@ -1042,7 +1046,7 @@ int main(int argc, char const *argv[]) {
 
 	for(int i = 0;i < jumlahTarget;i++) {
 		arrkecy[i] = 0;
-		arrkecx[i] = 0;
+		arrkecx[i] = 1;
         //posisi target
         if (i == 0){
             arrtargetx[i] = 25;
@@ -1068,6 +1072,11 @@ int main(int argc, char const *argv[]) {
             arrtargetx[i] = 310;
             arrtargety[i] = 375;
         }
+        rgb temp;
+        temp.r = 254-i;
+        temp.g = 0;
+        temp.b = 0;
+        targetColor[i] = temp;
 		
 		arrtargetdir[i] = 0;
 		arrstop[i] = false;
@@ -1088,7 +1097,7 @@ int main(int argc, char const *argv[]) {
         
 		if (bangunan) {
             drawBangunan(B);
-            // colorBangunan();
+            //colorBangunan();
         }
 		
 		// draw Pohon
