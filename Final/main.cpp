@@ -946,6 +946,41 @@ void *drawDroneThread(void *args){
 		}
 }
 
+void behaviourOrang(int i, int scaling, int speed, int range){
+    if(arrtargetalive[i]){
+                    drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED2, rgb::MAGENTA2);
+
+                    arrtargetx[i] = arrtargetx[i] + speed*arrtargetdir[i];
+                    arrtargetujung[i] += arrtargetdir[i];
+                    if (arrtargetujung[i] >= range){
+                        arrtargetdir[i] = -1;
+                    }
+                    if (arrtargetujung[i] <= 0) {
+                        arrtargetdir[i] = 1;
+                    }
+                } else {
+                    //kecy = 0;
+                    
+                    if (!arrstop[i]) {
+                        if (arrkepalay[i] < arrkepalay[i]+8*scaling){
+                            arrkepalax[i] += arrkecx[i];
+                            arrkepalay[i] += arrkecy[i];
+                            arrkecy[i]++;
+                        }
+                        if (arrkecy[i] < 2) {
+                            arrstop[i] = true;
+                        }
+                        if (arrkecy[i] > 0) {
+                            arrkepalax[i] += arrkecx[i];
+                            arrkepalay[i] -= arrkecy[i];
+                            arrkecy[i] -= 2;
+                        }
+                        drawKepala(arrkepalax[i],arrkepalay[i],scaling,rgb::RED, rgb::WHITE);
+                        sleep(5);
+                    }
+                }
+}
+
 int main(int argc, char const *argv[]) {
     clearMatrix();
 	
@@ -1004,11 +1039,36 @@ int main(int argc, char const *argv[]) {
 	int direction = 0;
 	int scaling = 2;
 	
+
 	for(int i = 0;i < jumlahTarget;i++) {
 		arrkecy[i] = 0;
 		arrkecx[i] = 0;
-		arrtargetx[i] = 25*(i+1);
-		arrtargety[i] = 25*(i+1);
+        //posisi target
+        if (i == 0){
+            arrtargetx[i] = 25;
+            arrtargety[i] = 40;
+        }
+        else if (i == 1){
+            arrtargetx[i] = 100;
+            arrtargety[i] = 115;
+        }
+        else if (i == 2){
+            arrtargetx[i] = 150;
+            arrtargety[i] = 175;
+        }
+        else if (i == 3){
+            arrtargetx[i] = 235;
+            arrtargety[i] = 235;
+        }
+        else if (i == 4){
+            arrtargetx[i] = 175;
+            arrtargety[i] = 300;
+        }
+        else{
+            arrtargetx[i] = 310;
+            arrtargety[i] = 375;
+        }
+		
 		arrtargetdir[i] = 0;
 		arrstop[i] = false;
 		arrtargetalive[i] = true;
@@ -1035,40 +1095,27 @@ int main(int argc, char const *argv[]) {
         if (pohon)
             drawAllPohon();
 		
-            
+        // perilaku target
 		for(int i = 0;i < jumlahTarget;i++) {
-			if(arrtargetalive[i]){
-				drawTarget(arrtargetx[i],arrtargety[i],scaling,rgb::RED2, rgb::MAGENTA2);
-
-				arrtargetx[i] = arrtargetx[i] + 5*arrtargetdir[i];
-				arrtargetujung[i] += arrtargetdir[i];
-				if (arrtargetujung[i] >= 10){
-					arrtargetdir[i] = -1;
-				}
-				if (arrtargetujung[i] <= 0) {
-					arrtargetdir[i] = 1;
-				}
-			} else {
-				//kecy = 0;
-				
-				if (!arrstop[i]) {
-					if (arrkepalay[i] < arrkepalay[i]+8*scaling){
-						arrkepalax[i] += arrkecx[i];
-						arrkepalay[i] += arrkecy[i];
-						arrkecy[i]++;
-					}
-					if (arrkecy[i] < 2) {
-						arrstop[i] = true;
-					}
-					if (arrkecy[i] > 0) {
-						arrkepalax[i] += arrkecx[i];
-						arrkepalay[i] -= arrkecy[i];
-						arrkecy[i] -= 2;
-					}
-					drawKepala(arrkepalax[i],arrkepalay[i],scaling,rgb::RED, rgb::WHITE);
-					sleep(5);
-				}
-			}
+            if (i == 0){
+                behaviourOrang(i, scaling, 5, 75);
+            }
+            else if (i == 1){
+                behaviourOrang(i, scaling, 2, 55);
+            }
+            else if (i == 2){
+                behaviourOrang(i, scaling, 1, 100);
+            }
+            else if (i == 3){
+                behaviourOrang(i, scaling, 4, 40);
+            }
+            else if (i == 4){
+                behaviourOrang(i, scaling, 3, 30);
+            }
+            else{
+                behaviourOrang(i, scaling, 2, 50);
+            }
+			
 		}
 		//draw bangunan
 		
