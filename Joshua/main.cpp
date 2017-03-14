@@ -15,10 +15,11 @@
 #include <vector>
 
 using namespace std;
-
-#define WIDTH 1300
+// ukuran layar
+#define WIDTH 1300 
 #define HEIGHT 700
 #define lookSize 600
+//jumlah orang untuk dibunuh
 #define jumlahTarget 6
 #define N_TARGET 6
 
@@ -46,6 +47,7 @@ typedef struct rgb {
     }
 } rgb;
 
+//untuk menentukan warna dan konstanta
 const rgb rgb::WHITE = {255, 255, 255};
 const rgb rgb::GRAY = {128, 128, 128};
 const rgb rgb::YELLOW = {255, 255, 0};
@@ -64,7 +66,7 @@ typedef struct {
     double v;       // a fraction between 0 and 1
 } hsv;
 
-
+// peta kecil yang kiri
 const int MAP_WIDTH = 442;
 const int MAP_HEIGHT = 520;
 
@@ -83,7 +85,7 @@ int mode = 0;
 //Array
 rgb targetColor[6];
 bool isTargetShot[6];
-
+//Array target 
 int arrkepalax[jumlahTarget];
 int arrkepalay[jumlahTarget];
 int arrbadanx[jumlahTarget];
@@ -608,8 +610,6 @@ void readBangunanFromFile (ifstream& myfile, vector<Building> &B) {
     myfile.close();
 }
 
-
-
 rgb hsv2rgb(hsv in)
 {
     double      hh, p, q, t, ff;
@@ -726,35 +726,6 @@ void floodFillOrang(int x, int y, rgb batas, rgb warna){
         }
     }
 }
-void drawCircle(int x0, int y0, int radius)
-{
-    int x = radius;
-    int y = 0;
-    int err = 0;
-    while (x >= y)
-    {
-        drawPoint(rgb::WHITE, x0 - x, y0 + y);
-        drawPoint(rgb::WHITE, x0 - y, y0 + x);
-        drawPoint(rgb::WHITE, x0 - y, y0 - x);
-        drawPoint(rgb::WHITE, x0 - x, y0 - y);
-        drawPoint(rgb::WHITE, x0 + x, y0 + y);
-        drawPoint(rgb::WHITE, x0 + y, y0 + x);
-        drawPoint(rgb::WHITE, x0 + y, y0 - x);
-        drawPoint(rgb::WHITE, x0 + x, y0 - y);
-
-        if (err <= 0)
-        {
-            y += 1;
-            err += 2*y + 1;
-        }
-        if (err > 0)
-        {
-            x -= 1;
-            err -= 2*x + 1;
-        }
-    }
-    floodFill(x0,y0,rgb::WHITE,rgb::GREEN);
-}
 
 void drawKepala(int x, int y, int scaling, rgb warna, rgb batas){
     drawLineOrang(batas, x, y, x+2*scaling, y);
@@ -814,6 +785,36 @@ void destroyTarget(int x, int y, int scaling, rgb warna,rgb batas){
         drawKepala(x,y,scaling,warna,batas);
         sleep(1000);
     }
+}
+
+void drawCircle(int x0, int y0, int radius)
+{
+    int x = radius;
+    int y = 0;
+    int err = 0;
+    while (x >= y)
+    {
+        drawPoint(rgb::WHITE, x0 - x, y0 + y);
+        drawPoint(rgb::WHITE, x0 - y, y0 + x);
+        drawPoint(rgb::WHITE, x0 - y, y0 - x);
+        drawPoint(rgb::WHITE, x0 - x, y0 - y);
+        drawPoint(rgb::WHITE, x0 + x, y0 + y);
+        drawPoint(rgb::WHITE, x0 + y, y0 + x);
+        drawPoint(rgb::WHITE, x0 + y, y0 - x);
+        drawPoint(rgb::WHITE, x0 + x, y0 - y);
+
+        if (err <= 0)
+        {
+            y += 1;
+            err += 2*y + 1;
+        }
+        if (err > 0)
+        {
+            x -= 1;
+            err -= 2*x + 1;
+        }
+    }
+    floodFill(x0,y0,rgb::WHITE,rgb::GREEN);
 }
 
 void drawBangunan(vector<Building> &B) {
