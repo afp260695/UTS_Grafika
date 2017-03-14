@@ -704,30 +704,6 @@ rgb hsv2rgb(hsv in)
     return out;
 }
 
-void colorBangunan() {
-    
-    double hue = 0;
-    for (int i = 0; i < MAP_WIDTH; ++i)
-    {
-        for (int j = 0; j < MAP_HEIGHT; ++j)
-        {
-            if (pixelMatrix[i][j] == rgb::BLACK)
-            {
-                hsv buildingColor = {hue, 0.7, 0.8};
-                
-                floodFill(i, j, rgb::WHITE, hsv2rgb(buildingColor));
-                hue += 10;
-                if (hue > 360)
-                {
-                    hue = 0;
-                }
-            }
-        }
-    }
-    // floodFill(3, 3, rgb::WHITE, rgb::GRAY);
-    // floodFill2(3, 3, rgb::MAGENTA2, rgb::WHITE, rgb::BLACK);
-}
-
 bool drawLineOrang(rgb color, int x1, int y1, int x2, int y2) {
     bool ret = false;
 
@@ -1097,7 +1073,6 @@ int main(int argc, char const *argv[]) {
         
 		if (bangunan) {
             drawBangunan(B);
-            //colorBangunan();
         }
 		
 		// draw Pohon
