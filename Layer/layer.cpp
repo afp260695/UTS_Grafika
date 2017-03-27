@@ -1,140 +1,121 @@
 #include <iostream>
-#include <String.h>
+#include <string>
+#include <fstream>
+#include "Color.hpp"
+#include "Drawer.hpp"
 
 using namespace std;
 
-public class Layer {
-	private vector<Object> vObject;
-	private int nObject;
-	private Point p1;
-	private Point p2;
-	private Point p3;
-	private Point p4;
-	private String nama;
-	private bool show;
-	public Layer(vector<Object> vObject, String nama){
-		this.vObject = vObject;
-		this.nObject = vObject.size();
-		this.nama = nama;
-		this.show = true;
-		int xmin, xmax = vObject[0].getListOfTitik()[0].getX();
-		int ymin, ymax = vObject[0].getListOfTitik()[0].getY();
-		for (int i=1; i<this.nObject; i++){
-			for (int j=1; j < this.vObject[i].nTitik;j++){
-				if (xmin > vObject[i].getListOfTitik()[j].getX()){
-					xmin = vObject[i].getListOfTitik()[j].getX();
-				}
-				if (xmax < vObject[i].getListOfTitik()[j].getX()){
-					xmax = vObject[i].getListOfTitik()[j].getX();
-				}
-				if (ymin > vObject[i].getListOfTitik()[j].getY()){
-					ymin = vObject[i].getListOfTitik()[j].getY();
-				}
-				if (ymax < vObject[i].getListOfTitik()[j].getY()){
-					ymax = vObject[i].getListOfTitik()[j].getY();
-				}
-			}
-		}
-		this.p1.setX(xmin);
-		this.p1.setY(ymin);
-		this.p2.setX(xmax);
-		this.p2.setY(ymin);
-		this.p3.setX(xmax);
-		this.p3.setY(ymax);
-		this.p4.setX(xmin);
-		this.p4.setY(ymax);
+class Layer {
+	private:
+		vector<Object> vObject;
+		int nObject;
+		Point p1;
+		Point p2;
+		Point p3;
+		Point p4;
+		string nama;
+		bool show;
+
+	public:
+	Layer(vector<Object> vObject, string nama){
+		this->vObject = vObject;
+		this->nObject = vObject.size();
+		this->nama = nama;
+		this->show = true;
+		updateEnvelope();
 	}
 
 	//GETTER
-	public vector<Object> getVectorObject(){
-		return lObject;
+	vector<Object> getVectorObject(){
+		return vObject;
 	}
 
-	public int getNObject(){
+	int getNObject(){
 		return nObject;
 	}
 
-	public Point getP1(){
+	Point getP1(){
 		return p1;
 	}
 
-	public Point getP2(){
+	Point getP2(){
 		return p2;
 	}
 
-	public Point getP3(){
+	Point getP3(){
 		return p3;
 	}
 
-	public Point getP4(){
+	Point getP4(){
 		return p4;
 	}
 
-	public String getNama(){
+	string getNama(){
 		return nama;
 	}
 
-	public bool getShow(){
+	bool getShow(){
 		return show;
 	}
 
 	//SETTER
-	public void setVectorObject(vector<Object> vObject){
-		this.vObject = vObject;
+	void setVectorObject(vector<Object> vObject){
+		this->vObject = vObject;
 	}
 
-	public void setNObject(int nObject){
-		this.nObject = nObject;
+	void setNObject(int nObject){
+		this->nObject = nObject;
 	}
 
-	public void setP1(Point p1){
-		this.p1 = p1;
+	void setP1(Point p1){
+		this->p1 = p1;
 	}
 
-	public void setP2(Point p2){
-		this.p2 = p2;
+	void setP2(Point p2){
+		this->p2 = p2;
 	}
 
-	public void setP3(Point p3){
-		this.p3 = p3;
+	void setP3(Point p3){
+		this->p3 = p3;
 	}
 
-	public void setP4(Point p4){
-		this.p4 = p4;
+	void setP4(Point p4){
+		this->p4 = p4;
 	}
 
-	public void setNama(String nama){
-		this.nama = nama;
+	void setNama(string nama){
+		this->nama = nama;
 	}
 
-	public void setShow(bool show){
-		this.show = show;
+	void setShow(bool show){
+		this->show = show;
 	}
 
-	public void save(String namaFile){
+	void save(string namaFile){
 		ofstream myfile;
-		myfile.open(namaFile,ios::app);
+		myfile.open(namaFile.c_str());
 
 		if (!myfile.fail()){
 			//myfile<<"VectorObj = ";
-			for (int i = 0; i < this.nObject; i++){
-				myfile<<this.vObject[i].getNama()<<endl;
-				myfile<<this.vObject[i].getNTitik()<<endl; 
-				myfile<<this.vObject[i].getWarnaBorder().getR()<<endl;
-				myfile<<this.vObject[i].getWarnaBorder().getG()<<endl;
-				myfile<<this.vObject[i].getWarnaBorder().getB()<<endl;
-				myfile<<this.vObject[i].getWarnaIsi().getR()<<endl;
-				myfile<<this.vObject[i].getWarnaIsi().getG()<<endl;
-				myfile<<this.vObject[i].getWarnaIsi().getB()<<endl;
-				myfile<<this.vObject[i].getWeightBorder()<<endl;
-				myfile<<this.vObject[i].getShowBorder()<<endl;
-				myfile<<this.vObject[i].getShowIsi()<<endl;
-				for (int j = 0; j < this.vObject[i].getListofTitik().size(); j++){
-					myfile<<this.vObject[i].getListofTitik()[j].getX()<<endl;
-					myfile<<this.vObject[i].getListofTitik()[j].getY()<<endl;
+			for (int i = 0; i < this->nObject; i++){
+				myfile<<this->vObject[i].getNama()<<endl;
+				myfile<<this->vObject[i].getNTitik()<<endl; 
+				myfile<<this->vObject[i].getWarnaBorder().getR()<<endl;
+				myfile<<this->vObject[i].getWarnaBorder().getG()<<endl;
+				myfile<<this->vObject[i].getWarnaBorder().getB()<<endl;
+				myfile<<this->vObject[i].getWarnaIsi().getR()<<endl;
+				myfile<<this->vObject[i].getWarnaIsi().getG()<<endl;
+				myfile<<this->vObject[i].getWarnaIsi().getB()<<endl;
+				myfile<<this->vObject[i].getWeightBorder()<<endl;
+				myfile<<this->vObject[i].getShowBorder()<<endl;
+				myfile<<this->vObject[i].getShowIsi()<<endl;
+				for (int j = 0; j < this->vObject[i].getListOfTitik().size(); j++){
+					myfile<<this->vObject[i].getListOfTitik()[j].getX()<<endl;
+					myfile<<this->vObject[i].getListOfTitik()[j].getY()<<endl;
 				}
 				myfile<<"#"<<endl;
-				myfile<<this.vObject[i].getShow()<<endl;
+				myfile<<this->vObject[i].getShow()<<endl;
 				myfile<<"$"<<endl; //ganti object 
 			}
 			myfile<<"@"<<endl; //object nya abis
@@ -153,18 +134,18 @@ public class Layer {
 		}
 	}
 
-	public void load(String namaFile){
+	void load(string namaFile){
 		ifstream myfile;
-		String line;
-		myfile.open(namaFile,ios::app);
+		string line;
+		myfile.open(namaFile.c_str());
 		int i = 0;
 		int j = 0;
 		int k = 99;
 		int l = 0;
 		int x;
 		int y;
-		String nama;
-		int nTitik;
+		string nama;
+		int nPoint;
 		double red;
 		double green;
 		double blue;
@@ -173,7 +154,7 @@ public class Layer {
 		int weightBorder;
 		bool showBorder;
 		bool showIsi;
-		vector<Titik> listofTitik;
+		vector<Point> listofPoint;
 		bool show;
 
 		if (!myfile.fail()){
@@ -191,121 +172,135 @@ public class Layer {
 						j++;
 					}
 					else if (j == 1){
-						nTitik = (int)line;
+						nPoint = stoi(line);
 						j++;
 					}
 					else if (j == 2){
-						red = (double)line;
+						red = stod(line);
 						j++;
 					}
 					else if (j == 3){
-						green = (double)line;
+						green = stod(line);
 						j++;
 					}
 					else if (j == 4){
-						blue = (double)line;
-						warnaBorder = new Color(red,green,blue);
+						blue = stod(line);
+						warnaBorder.setColor(red,green,blue);
 						j++;
 					}
 					else if (j == 5){
-						red = (double)line;
+						red = stod(line);
 						j++;
 					}
 					else if (j == 6){
-						green = (double)line;
+						green = stod(line);
 						j++;
 					}
 					else if (j == 7){
-						blue = (double)line;
-						warnaIsi = new Color(red,green,blue);
+						blue = stod(line);
+						warnaIsi.setColor(red,green,blue);
 						j++;
 					}
 					else if (j == 8){
-						weightBorder = (int)line;
+						weightBorder = stoi(line);
 						j++;
 					}
 					else if (j == 9){
-						showBorder = line;
+						showBorder = toBool(line);
 						j++;
 					}
 					else if (j == 10){
-						showIsi = line;
+						showIsi = toBool(line);
 						j++;
 					}
 					else if (j == 11){
 						int idx = 0;
 						int m = 0;
-						while (line != "#"){ //penanda titiknya abis
+						while (line != "#"){ //penanda Pointnya abis
 							if (m == 0){
-								x = line;
+								x = stoi(line);
 							}
 							else if (m == 1){
-								y == line;
-								listofTitik[i] = new Titik(x,y);
+								y == stoi(line);
+								listofPoint[i].setX(x);
+								listofPoint[i].setY(y);
 								m = 0;
 								i++;
 							}
 						}
 					}
 					else if (j == 12){
-						show = line;
-						this.vObject[i] = new Object(nama,nTitik,warnaBorder,warnaIsi,weightBorder,showBorder,showIsi,listofTitik,show);
+						show = toBool(line);
+						//this->vObject[i] = new Object(nama,nPoint,warnaBorder,warnaIsi,weightBorder,showBorder,showIsi,listofPoint,show);
+						this->vObject[i].setNama(nama);
+						this->vObject[i].setNTitik(nPoint);
+						this->vObject[i].setWarnaBorder(warnaBorder);
+						this->vObject[i].setWarnaIsi(warnaIsi);
+						this->vObject[i].setWeightBorder(weightBorder);
+						this->vObject[i].setShowBorder(showBorder);
+						this->vObject[i].setShowIsi(showIsi);
+						this->vObject[i].setListOfTitik(listofPoint);
+						this->vObject[i].setShow(show);
 					}
 
 					if (k == 0){
-						this.nObject = (int)line;
+						this->nObject = stoi(line);
 						k++;
 					}
 					else if (k == 1){
 						if (l == 0){
-							x = line;
+							x = stoi(line);
 						}
 						else if (l == 1){
-							y = line;
+							y = stoi(line);
 						}
-						this.p1 = new Point(x,y);
+						this->p1.setX(x);
+						this->p1.setY(y);
 						l = 0;
 						k++;
 					}
 					else if (k == 2){
 						if (l == 0){
-							x = line;
+							x = stoi(line);
 						}
 						else if (l == 1){
-							y = line;
+							y = stoi(line);
 						}
-						this.p2 = new Point(x,y);
+						this->p2.setX(x);
+						this->p2.setY(y);
 						l = 0;
 						k++;
 					}
 					else if (k == 3){
 						if (l == 0){
-							x = line;
+							x = stoi(line);
 						}
 						else if (l == 1){
-							y = line;
+							y = stoi(line);
 						}
-						this.p3 = new Point(x,y);
+						this->p3.setX(x);
+						this->p3.setY(y);
 						l = 0;
 						k++;
 					}
 					else if (k == 4){
 						if (l == 0){
-							x = line;
+							x = stoi(line);
 						}
 						else if (l == 1){
-							y = line;
+							y = stoi(line);
 						}
-						this.p4 = new Point(x,y);
+						this->p4.setX(x);
+						this->p4.setY(y);
 						l = 0;
 						k++;
 					}
 					else if (k == 5){
-						this.nama = line;
+						this->nama = line;
 						k++;
 					}
 					else if (k == 6){
-						this.show = line;
+						this->show = toBool(line);
 					}
 				}
 			}
@@ -313,53 +308,42 @@ public class Layer {
 		}
 	}
 
-	public void addObject(Object object){
-		this.vObject.push_back(Object);
-		this.nObject += 1;
+	void addObject(Object object){
+		this->vObject.push_back(object);
+		this->nObject += 1;
 
 		//update evelope
-		int xmin, xmax = vObject[0].getListOfTitik()[0].getX();
-		int ymin, ymax = vObject[0].getListOfTitik()[0].getY();
-		for (int i=1; i<this.nObject; i++){
-			for (int j=1; j < this.vObject[i].nTitik;j++){
-				if (xmin > vObject[i].getListOfTitik()[j].getX()){
-					xmin = vObject[i].getListOfTitik()[j].getX();
-				}
-				if (xmax < vObject[i].getListOfTitik()[j].getX()){
-					xmax = vObject[i].getListOfTitik()[j].getX();
-				}
-				if (ymin > vObject[i].getListOfTitik()[j].getY()){
-					ymin = vObject[i].getListOfTitik()[j].getY();
-				}
-				if (ymax < vObject[i].getListOfTitik()[j].getY()){
-					ymax = vObject[i].getListOfTitik()[j].getY();
-				}
-			}
-		}
-		this.p1.setX(xmin);
-		this.p1.setY(ymin);
-		this.p2.setX(xmax);
-		this.p2.setY(ymin);
-		this.p3.setX(xmax);
-		this.p3.setY(ymax);
-		this.p4.setX(xmin);
-		this.p4.setY(ymax);
+		updateEnvelope();
 	}
 
-	public void deleteObject(String nama){
+	void deleteObject(string namaObject){
 		int i = 0;
-		while(i < this.nObject){
-			if (vObject[i].getNama == nama){
-				this.vObject.erase(i);
-				this.nObject -=1;
+		while(i < this->nObject){
+			if (vObject[i].getNama() == namaObject){
+				this->vObject.erase(vObject.begin()+i);
+				this->nObject -=1;
 				break;
 			}
 		}
 		//update evelope
+		updateEnvelope();
+		
+	}
+
+	bool toBool(string str){
+		if (str == "1"){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	void updateEnvelope(){
 		int xmin, xmax = vObject[0].getListOfTitik()[0].getX();
 		int ymin, ymax = vObject[0].getListOfTitik()[0].getY();
-		for (int i=1; i<this.nObject; i++){
-			for (int j=1; j < this.vObject[i].nTitik;j++){
+		for (int i=1; i<this->nObject; i++){
+			for (int j=1; j < this->vObject[i].getNTitik();j++){
 				if (xmin > vObject[i].getListOfTitik()[j].getX()){
 					xmin = vObject[i].getListOfTitik()[j].getX();
 				}
@@ -374,14 +358,14 @@ public class Layer {
 				}
 			}
 		}
-		this.p1.setX(xmin);
-		this.p1.setY(ymin);
-		this.p2.setX(xmax);
-		this.p2.setY(ymin);
-		this.p3.setX(xmax);
-		this.p3.setY(ymax);
-		this.p4.setX(xmin);
-		this.p4.setY(ymax);
+		this->p1.setX(xmin);
+		this->p1.setY(ymin);
+		this->p2.setX(xmax);
+		this->p2.setY(ymin);
+		this->p3.setX(xmax);
+		this->p3.setY(ymax);
+		this->p4.setX(xmin);
+		this->p4.setY(ymax);
 	}
 
-}
+};
