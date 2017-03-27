@@ -19,10 +19,18 @@ class Layer {
 		Point p4;
 		string nama;
 		bool show;
+		int objectSelected;
 
 	public:
 	Layer(vector<Object> vObject, string nama){
 		this->vObject = vObject;
+		this->nObject = vObject.size();
+		this->nama = nama;
+		this->show = true;
+		updateEnvelope();
+	}
+	
+	Layer(string nama) {
 		this->nObject = vObject.size();
 		this->nama = nama;
 		this->show = true;
@@ -61,6 +69,10 @@ class Layer {
 	bool getShow(){
 		return show;
 	}
+	
+	int getObjectSelected() {
+		return objectSelected;
+	}
 
 	//SETTER
 	void setVectorObject(vector<Object> vObject){
@@ -93,6 +105,10 @@ class Layer {
 
 	void setShow(bool show){
 		this->show = show;
+	}
+	
+	void setObjectSelected(int objectSelected) {
+		this->objectSelected = objectSelected;
 	}
 
 	void save(string namaFile){
@@ -345,32 +361,52 @@ class Layer {
 	}
 
 	void updateEnvelope(){
-		int xmin, xmax = vObject[0].getListOfTitik()[0].getX();
-		int ymin, ymax = vObject[0].getListOfTitik()[0].getY();
-		for (int i=1; i<this->nObject; i++){
-			for (int j=1; j < this->vObject[i].getNTitik();j++){
-				if (xmin > vObject[i].getListOfTitik()[j].getX()){
-					xmin = vObject[i].getListOfTitik()[j].getX();
-				}
-				if (xmax < vObject[i].getListOfTitik()[j].getX()){
-					xmax = vObject[i].getListOfTitik()[j].getX();
-				}
-				if (ymin > vObject[i].getListOfTitik()[j].getY()){
-					ymin = vObject[i].getListOfTitik()[j].getY();
-				}
-				if (ymax < vObject[i].getListOfTitik()[j].getY()){
-					ymax = vObject[i].getListOfTitik()[j].getY();
+		if (vObject.size() == 0) {
+			p1.setX(0);
+			p1.setY(0);
+			p2.setX(0);
+			p2.setY(0);
+			p3.setX(0);
+			p3.setY(0);
+			p4.setX(0);
+			p4.setY(0);
+		} else {
+			int xmin, xmax = vObject[0].getListOfTitik()[0].getX();
+			int ymin, ymax = vObject[0].getListOfTitik()[0].getY();
+			for (int i=1; i<this->nObject; i++){
+				for (int j=1; j < this->vObject[i].getNTitik();j++){
+					if (xmin > vObject[i].getListOfTitik()[j].getX()){
+						xmin = vObject[i].getListOfTitik()[j].getX();
+					}
+					if (xmax < vObject[i].getListOfTitik()[j].getX()){
+						xmax = vObject[i].getListOfTitik()[j].getX();
+					}
+					if (ymin > vObject[i].getListOfTitik()[j].getY()){
+						ymin = vObject[i].getListOfTitik()[j].getY();
+					}
+					if (ymax < vObject[i].getListOfTitik()[j].getY()){
+						ymax = vObject[i].getListOfTitik()[j].getY();
+					}
 				}
 			}
+			this->p1.setX(xmin);
+			this->p1.setY(ymin);
+			this->p2.setX(xmax);
+			this->p2.setY(ymin);
+			this->p3.setX(xmax);
+			this->p3.setY(ymax);
+			this->p4.setX(xmin);
+			this->p4.setY(ymax);
 		}
-		this->p1.setX(xmin);
-		this->p1.setY(ymin);
-		this->p2.setX(xmax);
-		this->p2.setY(ymin);
-		this->p3.setX(xmax);
-		this->p3.setY(ymax);
-		this->p4.setX(xmin);
-		this->p4.setY(ymax);
+	}
+	
+	void selectObjectByName(string nama) {
+		for(int i=0;i<vObject.size();i++) {
+			if (vObject[i].getNama() == nama) {
+				objectSelected = i;
+				break;
+			}
+		}
 	}
 
 };
