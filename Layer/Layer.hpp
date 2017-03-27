@@ -1,3 +1,6 @@
+#ifndef LAYER_HPP
+#define LAYER_HPP
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -142,6 +145,7 @@ class Layer {
 		int j = 0;
 		int k = 99;
 		int l = 0;
+
 		int x;
 		int y;
 		string nama;
@@ -216,17 +220,16 @@ class Layer {
 					else if (j == 11){
 						int idx = 0;
 						int m = 0;
-						int l = 0;
 						while (line != "#"){ //penanda Pointnya abis
 							if (m == 0){
 								x = stoi(line);
 							}
 							else if (m == 1){
 								y == stoi(line);
-								listofPoint[l].setX(x);
-								listofPoint[l].setY(y);
+								listofPoint[idx].setX(x);
+								listofPoint[idx].setY(y);
 								m = 0;
-								l++;
+								idx++;
 							}
 						}
 					}
@@ -371,3 +374,5 @@ class Layer {
 	}
 
 };
+
+#endif
