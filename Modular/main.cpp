@@ -282,7 +282,7 @@ int main(int argc, char const *argv[]) {
 		
 		Drawer::drawCircle(100,445,20);
         
-        Drawer::clipper(x_god,y_god,size_god);
+        
         Drawer::drawClips(100,700,lookSize);
 		//draw drone		
 		int x_ = Drawer::rotateX (x, y, 1);
@@ -290,6 +290,7 @@ int main(int argc, char const *argv[]) {
 		Drone::drawDrone (x_, y_, length, width, *MAGENTA);
 		Drawer::floodFill(x_, y_+10, *MAGENTA, *DARKGRAY);
 		x = x_; y = y_;
+        Drawer::clipper(x_god,y_god,size_god);
         DrawToScreen();
     } while (KeyPressed!='C');
 	
