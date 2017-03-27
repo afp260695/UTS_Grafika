@@ -67,7 +67,7 @@ class Object
 			return showIsi;
 		}
 		
-		vector<Point> getlistOfTitik(){
+		vector<Point> getListOfTitik(){
 			return listOfTitik;
 		}
 		
@@ -103,7 +103,7 @@ class Object
 			showIsi = b;
 		}
 		
-		void setlistOfTitik(vector<Point> v){
+		void setListOfTitik(vector<Point> v){
 			listOfTitik = v;
 		}
 		
