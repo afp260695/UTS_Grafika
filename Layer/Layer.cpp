@@ -114,11 +114,11 @@ class Layer {
 					myfile<<this->vObject[i].getListOfTitik()[j].getX()<<endl;
 					myfile<<this->vObject[i].getListOfTitik()[j].getY()<<endl;
 				}
-				myfile<<"#"<<endl;
+				myfile<<"#"<<endl; // akhir semua titik
 				myfile<<this->vObject[i].getShow()<<endl;
 				myfile<<"$"<<endl; //ganti object 
 			}
-			myfile<<"@"<<endl; //object nya abis
+			myfile<<"@"<<endl; //akhir semua object
 			myfile<<getNObject()<<endl;
 			myfile<<getP1().getX()<<endl;
 			myfile<<getP1().getY()<<endl;
@@ -216,16 +216,17 @@ class Layer {
 					else if (j == 11){
 						int idx = 0;
 						int m = 0;
+						int l = 0;
 						while (line != "#"){ //penanda Pointnya abis
 							if (m == 0){
 								x = stoi(line);
 							}
 							else if (m == 1){
 								y == stoi(line);
-								listofPoint[i].setX(x);
-								listofPoint[i].setY(y);
+								listofPoint[l].setX(x);
+								listofPoint[l].setY(y);
 								m = 0;
-								i++;
+								l++;
 							}
 						}
 					}
@@ -241,6 +242,7 @@ class Layer {
 						this->vObject[i].setShowIsi(showIsi);
 						this->vObject[i].setListOfTitik(listofPoint);
 						this->vObject[i].setShow(show);
+						j++;
 					}
 
 					if (k == 0){
